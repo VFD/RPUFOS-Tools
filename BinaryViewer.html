@@ -1,117 +1,41 @@
 <!DOCTYPE html>
 <html lang="fr">
 	<head>
-<head>
-  <!-- Encodage et compatibilité -->
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Informations -->
-  <title>Binary Viewer (Offset + Hex + ASCII)</title>
-  <meta name="description" content="Small hexadecimal and ASCII viewer to explore the binary contents of files.">
-  <meta name="author" content="VincentD">
-  <meta name="keywords" content="hex viewer, ascii, binary, file, binaire, fichier, dump">
+		<!-- Encodage et compatibilité -->
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Favicon -->
-  <link rel="icon" href="RPUFOS_Logo.ico" type="image/x-icon">
-  <!--
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  -->
+		<!-- Informations -->
+		<title>Binary Viewer (Offset + Hex + ASCII)</title>
+		<meta name="description" content="Small hexadecimal and ASCII viewer to explore the binary contents of files.">
+		<meta name="author" content="VincentD">
+		<meta name="keywords" content="hex viewer, ascii, binary, file, binaire, fichier, dump">
 
-  <!-- Manifest & PWA -->
-  <!-- <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#f5f5f5">  -->
+		<link rel="stylesheet" href="css/styles.css">
 
-  <!-- Scripts éventuels -->
-  <!-- <script src="script.js" defer></script> -->
+		<!-- Favicon -->
+		<link rel="icon" href="Logos/RPUFOS_Logo.ico" type="image/x-icon">
+		<link rel="apple-touch-icon" href="Logos/apple-touch-icon.png">
 
-<!--  -->
-<style>
+		<!-- Manifest & PWA -->
+		<!-- <link rel="manifest" href="manifest.json">
+		<meta name="theme-color" content="#f5f5f5">  -->
 
-body {
-	font-family: Arial, sans-serif;
-	margin:20px;
-	background:#f5f5f5;
-}
-
-h1 {
-	font-size:1.2em;
-	text-align: center;
-}
-
-.buttons { 
-  margin-bottom:10px; 
-  width:96%; 
-  margin-left:auto; 
-  margin-right:auto;
-}
-
-button {
-	margin-right:10px; padding:8px 12px;
-	border-radius:6px; border:1px solid #888; cursor:pointer;
-}
-
-label {
-	margin-right:15px;
-}
-
-#filename {
-	width:96%;
-	margin:0 auto 10px auto;
-	font-family: monospace;
-	font-size: 1.5em;
-	color: #333;
-	background: #eee;
-	padding:6px 10px;
-	border-radius:4px;
-}
-
-textarea {
-	display:block;
-	width:96%;
-	margin: 0 auto;
-	height: 600px;
-	font-family: monospace;
-	font-size: 1.5em;
-	padding: 10px 30px 10px 10px;
-	box-sizing: border-box;
-	border: 1px solid #ccc;
-	border-radius: 6px;
-	background:#fff;
-	resize:none;
-	white-space: pre;
-	overflow-x:auto;
-	overflow-y:auto;
-}
-
-.options-extra {
-	margin-top:8px;
-}
-
-.options-extra input {
-	width:80px; text-align:right;
-}
-
-footer {
-	text-align:center;
-	font-size: small;
-}
-
-.text-size-controls {
-	text-align:center;
-	margin-bottom:8px;
-}
-
-</style>
-
+		<!-- Scripts éventuels -->
+		<!-- <script src="script.js" defer></script> -->
 	</head>
 	<!--  -->
 	<body>
 		<!-- Header -->
 		<header>
-			<h1>Binary Viewer (Offset + Hex + ASCII)</h1>
+			<div class="header-container">
+				<img src="Logos/RPUFOS_Logo-512.png" alt="Logo" class="logo">
+				<h1>Binary Viewer (Offset + Hex + ASCII)</h1>
+			</div>
 		</header>
+
 		<hr />
 		<!-- MAIN -->
 		<main>
