@@ -1,7 +1,7 @@
 :root {
   /* Main palette */
   --font-family: Arial, sans-serif;
-  --background-color: #d0d0d0;
+  --background-color: #f3f3f3;
   --text-color: #333;
   --accent-color: #888;
   --border-color: #ccc;
@@ -17,7 +17,7 @@
   
   /* Language column colors */
   --fr-bg: #f9f9f9;   /* subtle gray for French */
-  --us-bg: #f9f9f9;   /* subtle blue for US English */
+  --us-bg: #f9f9f9;   /* subtle gray for US English */
   
 }
 
