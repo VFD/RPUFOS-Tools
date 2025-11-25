@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+<head>
+  <!-- Encodage et compatibilité -->
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Informations -->
+  <title>Binary Viewer (Offset + Hex + ASCII)</title>
+  <meta name="description" content="Small hexadecimal and ASCII viewer to explore the binary contents of files.">
+  <meta name="author" content="VincentD">
+  <meta name="keywords" content="hex viewer, ascii, binary, file, binaire, fichier, dump">
+
+  <!-- Favicon -->
+  <link rel="icon" href="RPUFOS_Logo.ico" type="image/x-icon">
+  <!--
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  -->
+
+  <!-- Manifest & PWA -->
+  <!-- <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f5f5f5">  -->
+
+  <!-- Scripts éventuels -->
+  <!-- <script src="script.js" defer></script> -->
+
+<!--  -->
+<style>
+
+body {
+	font-family: Arial, sans-serif;
+	margin:20px;
+	background:#f5f5f5;
+}
+
+h1 {
+	font-size:1.2em;
+	text-align: center;
+}
+
+.buttons { 
+  margin-bottom:10px; 
+  width:96%; 
+  margin-left:auto; 
+  margin-right:auto;
+}
+
+button {
+	margin-right:10px; padding:8px 12px;
+	border-radius:6px; border:1px solid #888; cursor:pointer;
+}
+
+label {
+	margin-right:15px;
+}
+
+#filename {
+	width:96%;
+	margin:0 auto 10px auto;
+	font-family: monospace;
+	font-size: 1.5em;
+	color: #333;
+	background: #eee;
+	padding:6px 10px;
+	border-radius:4px;
+}
+
+textarea {
+	display:block;
+	width:96%;
+	margin: 0 auto;
+	height: 600px;
+	font-family: monospace;
+	font-size: 1.5em;
+	padding: 10px 30px 10px 10px;
+	box-sizing: border-box;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	background:#fff;
+	resize:none;
+	white-space: pre;
+	overflow-x:auto;
+	overflow-y:auto;
+}
+
+.options-extra {
+	margin-top:8px;
+}
+
+.options-extra input {
+	width:80px; text-align:right;
+}
+
+footer {
+	text-align:center;
+	font-size: small;
+}
+
+.text-size-controls {
+	text-align:center;
+	margin-bottom:8px;
+}
+
+</style>
+
+	</head>
+	<!--  -->
+	<body>
+		<!-- Header -->
+		<header>
+			<h1>Binary Viewer (Offset + Hex + ASCII)</h1>
+		</header>
+		<hr />
+		<!-- MAIN -->
+		<main>
+			<section class="controls">
+				<div class="buttons">
+					<input id="file" type="file" style="display:none">
+					<button onclick="document.getElementById('file').click()">Charger un fichier</button>
+					<br /><hr />
+					<label><input type="checkbox" id="showOffset" checked> Show offset</label>
+					<label><input type="checkbox" id="showAscii" checked> Show ASCII</label>
+					<!-- Offset input -->
+					<div class="options-extra">
+						Offset (hex) : <input type="text" id="startOffset" value="0000">
+					</div>
+				</div>
+				<!-- Show filename -->
+				<hr />
+				<div id="filename">Aucun fichier chargé</div>
+			</section>
+			<!-- Testarea output -->
+			<hr />
+			<section class="viewer">
+				<div class="text-size-controls">
+					<button onclick="changeTextSize(-1)">A-</button>
+					<button onclick="changeTextSize(1)">A+</button>
+				</div>
+			<textarea id="output" readonly></textarea>
+			</section>
+			<hr />
+			<p>Reload or F5 or CTRL+F5 to reset.
+		</main>
+		<!--  -->
+		<footer>
+			<hr />
+			<p>&copy; 2025 Hex Viewer – VincentD</p>
+			<br />
+		</footer>
+<!-- ========== -->
+<!-- JavaScript -->
+<!-- ========== -->
+<script>
+
+// --------
+// Listener
+// --------
+document.getElementById('file').addEventListener('change', e=>{
+  const f = e.target.files[0];
+  if (!f) return;
+  document.getElementById('filename').textContent = "Fichier : " + f.name;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    const bytes = new Uint8Array(reader.result);
+    document.getElementById('output').value = makeHexAsciiDump(bytes);
+  };
+  reader.readAsArrayBuffer(f);
+});
+
+// -----------------------------
+// Change textarea font size
+// -----------------------------
+function changeTextSize(delta){
+  const output = document.getElementById('output');
+  const style = window.getComputedStyle(output);
+  const currentSize = parseFloat(style.fontSize);
+  let newSize = currentSize + delta;
+  if(newSize < 8) newSize = 8;      // minimum size
+  if(newSize > 32) newSize = 32;    // maximum size
+  output.style.fontSize = newSize + "px";
+}
+
+
+// -----------------------------
+// Build Hex/ASCII Viewer Output
+// -----------------------------
+function makeHexAsciiDump(bytes){
+  const showOffset = document.getElementById('showOffset').checked;
+  const showAscii  = document.getElementById('showAscii').checked;
+
+  // Reading the offset in hex (e.g., ‘0C000’)
+  let startOffsetStr = document.getElementById('startOffset').value.trim();
+  if (startOffsetStr.startsWith("0x")) {
+    startOffsetStr = startOffsetStr.slice(2); // avoid "0x" if présent
+  }
+  const startOffset = parseInt(startOffsetStr, 16) || 0;
+
+  let out = "";
+  for (let i=0; i<bytes.length; i+=16){
+    let hexPart = "";
+    let asciiPart = "";
+    for (let j=0; j<16; j++){
+      if (i+j < bytes.length){
+        const b = bytes[i+j];
+        hexPart += b.toString(16).toUpperCase().padStart(2,"0")+" ";
+        asciiPart += (b>=32 && b<=126) ? String.fromCharCode(b) : ".";
+      } else {
+        hexPart += "   ";
+        asciiPart += " ";
+      }
+      if (j===7) hexPart += " ";
+    }
+    let line = "";
+    if (showOffset){
+      const offset = (startOffset + i).toString(16).toUpperCase().padStart(8,"0");
+      line += offset + "  ";
+    }
+    line += hexPart;
+    if (showAscii){
+      line += " " + asciiPart;
+    }
+    out += line + "\n";
+  }
+  return out.trim();
+}
+
+// --------------------------------------------
+// Recalculate the dump when the options change
+// --------------------------------------------
+["showOffset","showAscii","startOffset"].forEach(id=>{
+  document.getElementById(id).addEventListener('change', ()=>{
+    const fileInput = document.getElementById('file');
+    if (fileInput.files[0]) {
+      const reader = new FileReader();
+      reader.onload = ()=>{
+        const bytes = new Uint8Array(reader.result);
+        document.getElementById('output').value = makeHexAsciiDump(bytes);
+      };
+      reader.readAsArrayBuffer(fileInput.files[0]);
+    }
+  });
+});
+
+</script>
+<!-- ============= -->
+<!-- End of script -->
+<!-- ============= -->
+	</body>
+	
+</html>
