@@ -9,6 +9,8 @@ ___
 ___
 ## Binary Viewer
 
+BinaryViewer.html
+
 A simple tool to visualize binary files.
 - Bytes in hexadecimal.
 - With or without ASCII.
@@ -16,6 +18,7 @@ A simple tool to visualize binary files.
 
 
 ___
+
 
 
 
