@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Éditeur de caractère 8x12</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin-top: 30px;
+    }
+    .grid {
+      display: grid;
+      gap: 4px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .cell {
+      width: 30px;
+      height: 30px;
+      background-color: #eee;
+      border: 1px solid #ccc;
+      cursor: pointer;
+    }
+    .cell.active {
+      background-color: black;
+    }
+    #output {
+      font-family: monospace;
+      font-size: 1.2em;
+      margin-top: 10px;
+    }
+    button {
+      margin: 5px;
+      padding: 8px 16px;
+      font-size: 1em;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧱 Éditeur de caractère</h1>
+
+  <script>
+    // 📐 Dimensions paramétrables
+    const cols = 8;
+    const rows = 12;
+  </script>
+
+  <div class="grid" id="grid"></div>
+  <button onclick="generateHex()">Générer le code hexadécimal</button>
+  <button onclick="resetGrid()">Réinitialiser</button>
+  <button onclick="invertGrid()">Inverser le dessin</button>
+  <div id="output"></div>
+
+  <script>
+    const grid = document.getElementById("grid");
+    const cells = [];
+
+    // Applique les dimensions à la grille CSS
+    grid.style.gridTemplateColumns = `repeat(${cols}, 30px)`;
+    grid.style.gridTemplateRows = `repeat(${rows}, 30px)`;
+
+    // Crée la grille dynamique
+    for (let y = 0; y < rows; y++) {
+      cells[y] = [];
+      for (let x = 0; x < cols; x++) {
+        const cell = document.createElement("div");
+        cell.classList.add("cell");
+        cell.dataset.x = x;
+        cell.dataset.y = y;
+        cell.onclick = () => {
+          cell.classList.toggle("active");
+        };
+        grid.appendChild(cell);
+        cells[y][x] = cell;
+      }
+    }
+
+    function generateHex() {
+      const hexLines = cells.map(row => {
+        let byte = 0;
+        row.forEach((cell, i) => {
+          if (cell.classList.contains("active")) {
+            byte |= (1 << (cols - 1 - i));
+          }
+        });
+        return byte.toString(16).padStart(2, '0').toUpperCase();
+      });
+      document.getElementById("output").innerText =
+        `Code hexadécimal (${cols}x${rows}) :\n` + hexLines.join(" ");
+    }
+
+    function resetGrid() {
+      cells.flat().forEach(cell => cell.classList.remove("active"));
+      document.getElementById("output").innerText = "";
+    }
+
+    function invertGrid() {
+      cells.flat().forEach(cell => {
+        cell.classList.toggle("active");
+      });
+    }
+  </script>
+</body>
+</html>
