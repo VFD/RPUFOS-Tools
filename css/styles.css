@@ -164,6 +164,14 @@ footer {
   background: var(--us-bg);         /* subtle blue for US English */
 }
 
+footer img {
+  display: block;        /* allows margin auto to work */
+  margin: 0 auto;        /* centers horizontally */
+  height: 50px;          /* fixed height */
+  width: auto;           /* keep proportions */
+}
+
+
 /* Responsive: stack columns on small screens */
 @media (max-width: 768px) {
   .journal {
