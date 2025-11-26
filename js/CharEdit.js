@@ -72,4 +72,6 @@ function invertGrid() {
 }
 
 // Create default grid on page load
+console.log("Page fully loaded, creating grid...");
 window.onload = createGrid;
+console.log("grid ok");
