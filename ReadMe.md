@@ -10,29 +10,8 @@ A set of HTML, CSS, and JavaScript tools to support the development of new softw
 ___
 ## On line access
 
+The following resources are compatible with GitHub Pages and are available at the link provided below.
+
 <a href="https://vfd.github.io/RPUFOS-Tools/" target="_blank">RPUFOS Tools</a>
 
 ___
-## Binary Viewer
-
-BinaryViewer.html
-
-A simple tool to visualize binary files.
-- Bytes in hexadecimal.
-- With or without ASCII.
-- With or without memory offset.
-
-
-___
-
-
-
-
-
-___
-
-
-
-
-
-
