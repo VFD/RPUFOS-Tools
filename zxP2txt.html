@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<!-- Meta information -->
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="VincentD">
+
+		<!-- Page title -->
+		<title>RPUFOS ZX81 P to TXT</title>
+
+		<!-- CSS stylesheet -->
+		<link rel="stylesheet" href="css/styles.css">
+		<link rel="stylesheet" href="css/zxP2txt.css">
+
+		<!-- CSS if FOUC -->
+		<!--
+		<link rel="preload" href="styles.css" as="style" onload="this.rel='stylesheet'">
+		<noscript><link rel="stylesheet" href="style.css"></noscript>
+		-->
+
+		<!-- Favicon (optional) -->
+		<link rel="icon" href="Logos/RPUFOS_Logo.ico" type="image/x-icon">
+
+		<!-- Scripts éventuels -->
+		<script src="js/zxP2txt.js" defer></script>
+	</head>
+
+	<body>
+		<!-- Header section -->
+		<header>
+			<div class="header-container">
+				<a href="index.html">
+					<img src="Logos/RPUFOS_Logo-512.png" alt="Logo" class="logo" />
+				</a>
+				<h1>RPUFOS ZX81 P to TXT</h1>
+			</div>
+		</header>
+
+		<hr />
+
+		<!-- Main content -->
+		<main>
+			<h2>ZX81 .P File Converter</h2>
+			<p>Select a .P file, convert it to a BASIC listing, and save it.
+			This uses the full ZX81 charset as in the original C tool.</p>
+			<p>This is experimental. Use at your own risk.</p>
+			<hr />
+			
+			<!-- File input row -->
+			<div class="bar">
+				<!-- Load a ZX81 .P file -->
+				<input type="file" id="fileInput" accept=".p">
+			</div>
+
+			<!-- Action buttons row -->
+			<div class="bar">
+				<!-- Convert the loaded file -->
+				<button id="convertBtn" disabled>Convert</button>
+				<!-- Save the content of the textarea as a .txt file -->
+				<button id="saveBtn" class="secondary">Save</button>
+			</div>
+
+			<!-- Graphics toggle row -->
+			<div class="bar">
+				<!-- Optional: approximate semi-graphics using Unicode blocks -->
+				<label class="toggle">
+					<input type="checkbox" id="graphicsToggle">
+					Use Unicode blocks for semi-graphics (experimental)
+				</label>
+			</div>
+
+			<!-- Hex toggle row -->
+			<div class="bar">
+				<!-- Optional: show REM binary as hexadecimal values -->
+				<label class="toggle">
+					<input type="checkbox" id="hexToggle">
+					Show REM binary as hex ( &#x26A0;&#xFE0F; only 1st one, experimental)
+				</label>
+			</div>
+
+			<hr />
+			<!-- Output area for the converted BASIC listing -->
+			<textarea id="output" placeholder="Converted ZX81 BASIC program will appear here...">
+			</textarea>
+			<!-- Status -->
+			<div class="status" id="status">No file loaded.</div>
+		</main>
+
+
+		<hr />
+		<!-- Footer section -->
+		<footer>
+			<img src="Logos/CC-BY-NC-ND-EU.png" alt="CC by NC ND EU" />
+			<p>&copy; 2025 VincentD - RPUFOS Work Tools</p>
+		</footer>
+		
+	</body>
+	
+</html>
+<!-- EOF -->
