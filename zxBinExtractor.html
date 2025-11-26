@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<!-- Meta information -->
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="VincentD">
+
+		<!-- Page title -->
+		<title>RPUFOS title</title>
+
+		<!-- CSS stylesheet -->
+		<link rel="stylesheet" href="css/styles.css">
+		<link rel="stylesheet" href="css/zxBinExtractor.css">
+
+		<!-- CSS if FOUC -->
+		<!--
+		<link rel="preload" href="styles.css" as="style" onload="this.rel='stylesheet'">
+		<noscript><link rel="stylesheet" href="style.css"></noscript>
+		-->
+
+		<!-- Favicon (optional) -->
+		<link rel="icon" href="Logos/RPUFOS_Logo.ico" type="image/x-icon">
+
+		<!-- Scripts éventuels -->
+		<script src="js/zxBinExtractor.js" defer></script>
+	</head>
+
+	<body>
+		<!-- Header section -->
+		<header>
+			<div class="header-container">
+				<a href="index.html">
+					<img src="Logos/RPUFOS_Logo-512.png" alt="Logo" class="logo" />
+				</a>
+				<h1>RPUFOS Title</h1>
+			</div>
+		</header>
+
+		<hr />
+
+		<!-- Main content -->
+		<main>
+
+			<h2>ZX81 REM Binary Extractor</h2>
+			<p>Loads a ZX81 .P file and extracts the binary payload from the first REM line.</p>
+			<p>Shows a hex preview with correct ZX81 memory addresses (starting at 0x43A0).</p>
+			<ul>
+				<li>5 bytes for line 1</li>
+				<li>1 byte for REM</li>
+				<li>2 bytes for next line</li>
+			</ul>
+
+			<div class="bar">
+				<input type="file" id="fileInput" accept=".p">
+				<button id="extractBtn" disabled>Extract 1st REM binary</button>
+				<button id="saveBtn" class="secondary" disabled>Save .bin</button>
+			</div>
+
+			<textarea id="output" placeholder="Status, line info, and hex preview will appear here..."></textarea>
+			<div class="status" id="status">No file loaded.</div>
+
+		</main>
+
+		<hr />
+		<!-- Footer section -->
+		<footer>
+			<img src="Logos/CC-BY-NC-ND-EU.png" alt="CC by NC ND EU" />
+			<p>&copy; 2025 VincentD - RPUFOS Work Tools</p>
+		</footer>
+		
+	</body>
+	
+</html>
+<!-- EOF -->
