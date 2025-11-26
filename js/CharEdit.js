@@ -25,8 +25,18 @@ let rows = 12;
 // Function to create the grid dynamically
 function createGrid() {
   // Get user input values
-  cols = parseInt(document.getElementById("colsInput").value, 10);
-  rows = parseInt(document.getElementById("rowsInput").value, 10);
+  let inputCols = parseInt(document.getElementById("colsInput").value, 10);
+  let inputRows = parseInt(document.getElementById("rowsInput").value, 10);
+
+  // Force cols to be a multiple of 8
+  if (inputCols % 8 !== 0) {
+    // Round up to the next multiple of 8
+    inputCols = Math.ceil(inputCols / 8) * 8;
+    alert(`Number of columns must be a multiple of 8.\nAdjusted to ${inputCols}.`);
+  }
+
+  cols = inputCols;
+  rows = inputRows;
 
   const grid = document.getElementById("grid");
   grid.innerHTML = ""; // Clear previous grid
@@ -59,23 +69,29 @@ function createGrid() {
   }
 }
 
+
 // Function to generate hexadecimal representation of the grid
 function generateHex() {
   const hexLines = cells.map(row => {
-    let byte = 0;
-    row.forEach((cell, i) => {
-      if (cell.classList.contains("active")) {
-        // Set bit if cell is active
-        byte |= (1 << (cols - 1 - i));
+    const bytes = [];
+    for (let block = 0; block < cols; block += 8) {
+      let byte = 0;
+      for (let i = 0; i < 8; i++) {
+        const cell = row[block + i];
+        if (cell.classList.contains("active")) {
+          // Set bit if cell is active
+          byte |= (1 << (7 - i)); // bit order: leftmost = MSB
+        }
       }
-    });
-    // Convert to hex string
-    return byte.toString(16).padStart(2, '0').toUpperCase();
+      bytes.push(byte.toString(16).padStart(2, '0').toUpperCase());
+    }
+    return bytes.join(" ");
   });
 
   document.getElementById("output").innerText =
-    `Hexadecimal code (${cols}x${rows}):\n` + hexLines.join(" ");
+    `Hexadecimal code (${cols}x${rows}):\n` + hexLines.join("\n");
 }
+
 
 // Function to reset the grid (clear all active cells)
 function resetGrid() {
