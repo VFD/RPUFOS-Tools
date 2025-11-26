@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<!-- Meta information -->
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="VincentD">
+
+		<!-- Page title -->
+		<title>RPUFOS Char Editor</title>
+
+		<!-- CSS stylesheet -->
+		<link rel="stylesheet" href="css/styles.css">
+		<link rel="stylesheet" href="css/CharEdit.css">
+
+		<!-- Favicon (optional) -->
+		<link rel="icon" href="Logos/RPUFOS_Logo.ico" type="image/x-icon">
+
+		<!-- Scripts -->
+		<script src="js/CharEdit.js" defer></script>
+	</head>
+
+	<body>
+		<!-- Header section -->
+		<header>
+			<div class="header-container">
+				<a href="">
+					<img src="Logos/RPUFOS_Logo-512.png" alt="Logo" class="logo" />
+				</a>
+				<h1>RPUFOS Char Editor</h1>
+			</div>
+		</header>
+
+		<hr />
+
+		<!-- Main content -->
+		<main>
+			<h2>How To</h2>
+			<p>
+			This interactive grid lets you select cells by clicking on them. 
+			Once you have chosen a pattern, you can generate its hexadecimal code, 
+			which will be displayed below. You can also reset the grid or invert 
+			all cells with the provided buttons.
+			</p>
+
+			<!-- User inputs for grid dimensions -->
+			<hr />
+			Columns: <input type="number" id="colsInput" value="8" min="1" max="32">
+			Rows: <input type="number" id="rowsInput" value="12" min="1" max="32">
+			<button onclick="createGrid()">Create Grid</button>
+			<br />
+			<button onclick="generateHex()">Generate Hex</button>
+			<button onclick="resetGrid()">Reset</button>
+			<button onclick="invertGrid()">Invert</button>
+			<hr />
+			<!-- Grid container -->
+			<div id="grid" class="grid"></div>
+
+			<!-- Output area -->
+			<hr />
+			<p>The generated hexadecimal code will appear below:</p>
+			<pre id="output"></pre>
+		</main>
+
+
+		<hr />
+		<!-- Footer section -->
+		<footer>
+			<img src="Logos/CC-BY-NC-ND-EU.png" alt="CC by NC ND EU" />
+			<p>&copy; 2025 VincentD - RPUFOS Work Tools</p>
+		</footer>
+		
+	</body>
+	
+</html>
+<!-- EOF -->
