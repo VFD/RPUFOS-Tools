@@ -1,3 +1,12 @@
+/* ============================================================
+   File: styles.css
+   Description: Global CSS for all html
+   Author: VincentD
+   Created: November 26, 2025
+   Last Updated: November 26, 2025
+   Version: 1.0
+   ============================================================ */
+
 :root {
   /* Main palette */
   --font-family: Arial, sans-serif;
@@ -178,3 +187,5 @@ footer img {
     flex-direction: column;
   }
 }
+
+/* ==================== EOF ===================== */

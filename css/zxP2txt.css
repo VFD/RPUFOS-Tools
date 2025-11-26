@@ -1,0 +1,75 @@
+/* ============================================================
+   File: base.css
+   Description: 
+   Author: VincentD
+   Created: November 26, 2025
+   Last Updated: November 26, 2025
+   Version: 1.0
+   ============================================================ */
+
+
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+input[type="file"] {
+  padding: 6px;
+}
+
+button,
+label {
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+button {
+  background: #1f6feb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.secondary {
+  background: #666;
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #eee;
+  border-radius: 6px;
+}
+
+textarea {
+  width: 100%;
+  height: 480px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 14px;
+  line-height: 1.4;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  box-sizing: border-box;
+  background: white;
+}
+
+.status {
+  font-size: 12px;
+  color: #888;
+  margin-top: 8px;
+}
+
+/* ==================== EOF ===================== */
