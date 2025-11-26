@@ -8,7 +8,9 @@ A set of HTML, CSS, and JavaScript tools to support the development of new softw
 ___
 ## On line access
 
-[RPUFOS-Tools](https://vfd.github.io/RPUFOS-Tools/)
+[RPUFOS-Tools](https://vfd.github.io/RPUFOS-Tools/){:target="_blank"}
+
+<a href="https://vfd.github.io/RPUFOS-Tools/" target="_blank">RPUFOS Tools</a>
 
 
 ___
@@ -29,5 +31,6 @@ ___
 
 
 ___
+
 
 
