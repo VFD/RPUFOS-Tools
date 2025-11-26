@@ -40,15 +40,16 @@
 		<main>
 			<h2>How To</h2>
 			<p>
-			This interactive grid lets you select cells by clicking on them. 
+			This interactive grid lets you select cells by clicking on them.<br />
 			Once you have chosen a pattern, you can generate its hexadecimal code, 
-			which will be displayed below. You can also reset the grid or invert 
-			all cells with the provided buttons.
+			which will be displayed below.<br />
+			You can also reset the grid or invert all cells with the provided buttons.<br />
+			This feature may also be extended to support sprite creation.
 			</p>
 
 			<!-- User inputs for grid dimensions -->
 			<hr />
-			Columns: <input type="number" id="colsInput" value="8" min="1" max="32">
+			Columns: <input type="number" id="colsInput" value="8" min="8" step="8" max="32">
 			Rows: <input type="number" id="rowsInput" value="12" min="1" max="32">
 			<button onclick="createGrid()">Create Grid</button>
 			<br />
