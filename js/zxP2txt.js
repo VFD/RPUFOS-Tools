@@ -112,7 +112,6 @@ const graphicsToggle = document.getElementById('graphicsToggle');
 const output = document.getElementById('output');
 const status = document.getElementById('status');
 
-
 // bin as Hex
 let binAsHex = false;
 const hexToggle = document.getElementById('hexToggle');
@@ -123,6 +122,7 @@ hexToggle.addEventListener('change', () => {
 let firstRemSeen = false;
 
 
+let loadedFileName = "program"; // default if no file loaded
 
 // Handle file selection: read into a Uint8Array
 fileInput.addEventListener('change', (event) => {
@@ -130,12 +130,15 @@ fileInput.addEventListener('change', (event) => {
   console.log("File selected:", file ? file.name : "none");
   if (!file) return;
 
+  // Store base name without extension
+  loadedFileName = file.name.replace(/\.p$/i, "") || "program";
+
   const reader = new FileReader();
   reader.onload = (e) => {
-	fileBuffer = new Uint8Array(e.target.result);
-	console.log("File loaded, size:", fileBuffer.length, "bytes");
-	status.textContent = `Loaded: ${file.name} (${fileBuffer.length} bytes)`;
-	convertBtn.disabled = false;
+    fileBuffer = new Uint8Array(e.target.result);
+    console.log("File loaded, size:", fileBuffer.length, "bytes");
+    status.textContent = `Loaded: ${file.name} (${fileBuffer.length} bytes)`;
+    convertBtn.disabled = false;
   };
   reader.readAsArrayBuffer(file);
 });
@@ -173,7 +176,7 @@ saveBtn.addEventListener('click', () => {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "program.txt";
+  a.download = `${loadedFileName}.bas`; // use loaded filename + .bas
   a.click();
   URL.revokeObjectURL(url);
 });
