@@ -1,3 +1,22 @@
+/**
+ * ------------------------------------------------------------
+ *  Project : Nom du projet
+ *  File    : CharEdit.js
+ *  Author  : VincentD
+ *  Date    : 2025-11-26
+ *  License : CC BY-NC 4.0 International
+ * ------------------------------------------------------------
+ *  Description:
+ *    This script handles the editing and creation
+ *    of character grids for the application.
+ *
+ *  Notes:
+ *    - Uses window.onload to initialize the grid.
+ *    - Compatible with GitHub Pages.
+ * ------------------------------------------------------------
+ */
+
+
 // Global variables to store grid data
 let cells = [];
 let cols = 8;
@@ -75,3 +94,6 @@ function invertGrid() {
 console.log("Page fully loaded, creating grid...");
 window.onload = createGrid;
 console.log("grid ok");
+
+
+// -------------------- EOF --------------------
