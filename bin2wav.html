@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<!-- Meta information -->
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="VincentD">
+
+		<!-- Page title -->
+		<title>RPUFOS bin to wav</title>
+
+		<!-- CSS stylesheet -->
+		<link rel="stylesheet" href="css/styles.css">
+		<link rel="stylesheet" href="css/bin2wav.css">
+
+		<!-- CSS if FOUC -->
+		<!--
+		<link rel="preload" href="styles.css" as="style" onload="this.rel='stylesheet'">
+		<noscript><link rel="stylesheet" href="style.css"></noscript>
+		-->
+
+		<!-- Favicon (optional) -->
+		<link rel="icon" href="Logos/RPUFOS_Logo.ico" type="image/x-icon">
+
+		<!-- Scripts éventuels -->
+		<script src="js/bin2wav.js" defer></script>
+		<script src="js/wav.js" defer></script>
+	</head>
+
+	<body>
+		<!-- Header section -->
+		<header>
+			<div class="header-container">
+				<a href="index.html">
+					<img src="Logos/RPUFOS_Logo-512.png" alt="Logo" class="logo" />
+				</a>
+				<h1>RPUFOS BIN to WAV</h1>
+			</div>
+		</header>
+
+		<hr />
+
+		<!-- Main content -->
+	
+<main>
+
+<h2>Convert to WAV</h2>
+<p>Experimental conversion to WAV (not yet tested on real Obscure Systems).</p>
+
+<h3>How To</h3>
+<p>Click the 'Load' button to load the file.<br />
+The file is decoded in hexadecimal in the textarea.<br />
+Set the WAV output using the options below, then convert it with the 'Download as WAV' button.</p>
+
+<hr />
+<h3>Convert</h3>
+
+  <!-- Application container -->
+  <section id="app-container">
+    <!-- File input -->
+    <div class="file-upload">
+      <label for="fileInput">Choose a file:</label>
+      <input type="file" id="fileInput" />
+    </div>
+
+    <!-- Filename display -->
+    <div id="file-display">No file selected</div>
+
+    <!-- Textarea viewer -->
+    <textarea id="fileContent" readonly placeholder="Hex dump will appear here..."></textarea>
+
+    <!-- WAV options -->
+	<hr />
+<div class="wav-options">
+  <h4>WAV Options</h4>
+  <label>Sample Rate:
+    <select id="wavSampleRate">
+      <option value="8000">8000 Hz (Téléphonie)</option>
+      <option value="11025" selected>11025 Hz (Obscure Systems)</option>
+      <option value="16000">16000 Hz</option>
+      <option value="22050">22050 Hz</option>
+      <option value="32000">32000 Hz</option>
+      <option value="44100">44100 Hz (CD Audio)</option>
+      <option value="48000">48000 Hz (Standard Pro)</option>
+    </select>
+  </label>
+  <label>Bit Depth:
+    <select id="wavBitDepth">
+      <option value="8">8-bit</option>
+      <option value="16">16-bit</option>
+    </select>
+  </label>
+  <label>Channels:
+    <select id="wavChannels">
+      <option value="1">Mono</option>
+      <option value="2">Stereo</option>
+    </select>
+  </label>
+  <label>Encoding:
+    <select id="wavEncoding">
+      <option value="raw">Raw PCM</option>
+      <option value="fsk">FSK</option>
+      <option value="manchester">Manchester</option>
+      <option value="pwm">PWM</option>
+    </select>
+  </label>
+</div>
+
+
+    <!-- Controls -->
+	<hr />
+	<h4>Actions</h4>
+    <div class="controls">
+      <button id="clearBtn">Clear</button>
+      <button id="downloadBtn">Download as WAV</button>
+    </div>
+  </section>
+</main>
+
+
+
+		<hr />
+		<!-- Footer section -->
+		<footer>
+			<img src="Logos/CC-BY-NC-ND-EU.png" alt="CC by NC ND EU" />
+			<p>&copy; 2025 VincentD - RPUFOS Work Tools</p>
+		</footer>
+		
+	</body>
+	
+</html>
+<!-- EOF -->
