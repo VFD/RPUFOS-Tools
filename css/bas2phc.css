@@ -1,0 +1,22 @@
+
+.phcContainer {
+  display: flex;
+  gap: 20px;
+}
+
+.phcColumn {
+  flex: 1;
+}
+
+textarea {
+  width: 100%;
+  height: 300px;
+  font-family: monospace;
+  font-size: 1.2em;
+  padding: 1em;
+  resize: vertical;
+}
+
+
+
+
