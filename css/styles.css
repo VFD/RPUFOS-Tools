@@ -64,6 +64,21 @@ header {
   text-align: center;
 }
 
+
+/* Footer */
+footer {
+  text-align: center;
+  font-size: small;
+  font-weight: bold;
+}
+
+footer img {
+  display: block;        /* allows margin auto to work */
+  margin: 0 auto;        /* centers horizontally */
+  height: 50px;          /* fixed height */
+  width: auto;           /* keep proportions */
+}
+
 /* Buttons section */
 .buttons { 
   margin-bottom: 10px; 
@@ -137,13 +152,6 @@ textarea {
   margin-bottom: 8px;
 }
 
-
-footer img {
-  display: block;        /* allows margin auto to work */
-  margin: 0 auto;        /* centers horizontally */
-  height: 50px;          /* fixed height */
-  width: auto;           /* keep proportions */
-}
 
 
 /* ==================== EOF ===================== */

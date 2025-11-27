@@ -1,5 +1,5 @@
 /* ============================================================
-   File: phc2bas.css
+   File: wav.css
    Description: 
    Author: VincentD
    Created: November 26, 2025
@@ -8,14 +8,9 @@
    ============================================================ */
 
 
-textarea {
-  width: 96%;
-  height: 300px;
-  padding: 10px;
-  font-size: 16px;
-  border: 2px solid #ccc;
-  border-radius: 5px;
-  resize: none;
-}
+
+
+
+
 
 /* ==================== EOF ===================== */
