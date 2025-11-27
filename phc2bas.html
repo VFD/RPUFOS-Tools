@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<!-- Meta information -->
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="VincentD">
+
+		<!-- Page title -->
+		<title>RPUFOS title</title>
+
+		<!-- CSS stylesheet -->
+		<link rel="stylesheet" href="css/phc2bas.css">
+
+		<!-- CSS if FOUC -->
+		<!--
+		<link rel="preload" href="styles.css" as="style" onload="this.rel='stylesheet'">
+		<noscript><link rel="stylesheet" href="style.css"></noscript>
+		-->
+
+		<!-- Favicon (optional) -->
+		<link rel="icon" href="Logos/RPUFOS_Logo.ico" type="image/x-icon">
+
+		<!-- Scripts éventuels -->
+		<script src="js/phc2bas.js" defer></script>
+	</head>
+
+	<body>
+		<!-- Header section -->
+		<header>
+			<div class="header-container">
+				<a href="index.html">
+					<img src="Logos/RPUFOS_Logo-512.png" alt="Logo" class="logo" />
+				</a>
+				<h1>PHC to BASIC</h1>
+			</div>
+		</header>
+
+		<hr />
+
+		<!-- Main content -->
+		<main>
+			<h2>Converter</h2>
+			<!-- Buttons -->
+			<div class="buttons">
+				<button id="loadBtnPhc">Load PHC</button>
+				<button id="saveBtnBas" disabled>Save .bas</button>
+			</div>
+			<!-- Infos -->
+			<div class="meta">
+				<div><strong>PHC filename:</strong> <span id="phcName">—</span></div>
+				<div><strong>Lignes detected:</strong> <span id="lineCount">0</span></div>
+			</div>
+			<!-- Output -->
+			<h2>BASIC Code</h2>
+			<textarea id="basOutput" readonly placeholder="Load .phc file to decode BASIC…"></textarea>
+			
+			<hr />
+			<section>
+				<h3>The decrypted PHC binary</h3>
+				<p>The PHC file structure.</p>
+				<h4>Sync header</h4>
+				<p>10 bytes of value A5h</p>
+				<pre>a5 a5 a5 a5 a5 a5 a5 a5 a5 a5</pre>
+				<h4>Program name:</h4>
+				<p>6 ASCII characters (padded with 00h if shorter).</p>
+				<pre>nn nn nn nn nn nn</pre>
+				<h4>Program body</h4>
+				<p>Repeated blocks of BASIC code encoded in tokens/ASCII.<br />
+				Each line ends with 00h.<br />
+				Continue until no more lines.</p>
+				<pre>nn nn nn nn nn 00</pre>
+				<h4>End of program marker</h4>
+				<p>This includ the end of the last line.</p>
+				<pre>00 00 00</pre>
+				<h4>Line index table (stored in reverse order)</h4>
+				<p>Each entry is 4 bytes:
+					<ul>
+						<li>AL, AH : memory address of the line (little endian)</li>
+						<li>NL, NH : line number (little endian)</li>
+					</ul>
+				Repeat until no more entries.<br />
+				The first four bytes are the last line, the last four bytes are the first line.</p>
+				<pre> al ah nl nh ...</pre>				
+				<h4>Trailer</h4>
+				<pre>00h FFh FFh FFh FFh</pre>
+				<p>followed by padding with 00h bytes (18).</p>
+				<pre>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</pre>
+				<p>Fixed tail section to mark the end of the file.</p>
+			</section>
+			
+		</main>
+
+		<hr />
+		<!-- Footer section -->
+		<footer>
+			<img src="Logos/CC-BY-NC-ND-EU.png" alt="CC by NC ND EU" />
+			<p>&copy; 2025 VincentD - RPUFOS Work Tools</p>
+		</footer>
+		
+	</body>
+	
+</html>
+<!-- EOF -->
