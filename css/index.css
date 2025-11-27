@@ -137,13 +137,42 @@ textarea {
   margin-bottom: 8px;
 }
 
-
-footer img {
-  display: block;        /* allows margin auto to work */
-  margin: 0 auto;        /* centers horizontally */
-  height: 50px;          /* fixed height */
-  width: auto;           /* keep proportions */
+.journal {
+  display: flex;              /* two columns side by side */
+  gap: 20px;                  /* space between columns */
+  width: 96%;
+  margin: 20px auto;          /* spacing between journal blocks */
 }
 
+.column {
+  flex: 1;                    /* equal width for both columns */
+  padding: 10px;
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+}
+
+.column h1 {
+  text-align: center;
+  margin-bottom: 1em;
+  font-size: 1.2em;
+  color: var(--text-color);
+}
+
+.fr {
+  background: var(--fr-bg);         /* subtle gray for French */
+}
+
+.us {
+  background: var(--us-bg);         /* subtle blue for US English */
+}
+
+
+/* Responsive: stack columns on small screens */
+@media (max-width: 768px) {
+  .journal {
+    flex-direction: column;
+  }
+}
 
 /* ==================== EOF ===================== */
