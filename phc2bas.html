@@ -12,6 +12,7 @@
 		<title>RPUFOS title</title>
 
 		<!-- CSS stylesheet -->
+		<link rel="stylesheet" href="css/styles.css">
 		<link rel="stylesheet" href="css/phc2bas.css">
 
 		<!-- CSS if FOUC -->
@@ -37,22 +38,27 @@
 				<h1>PHC to BASIC</h1>
 			</div>
 		</header>
-
 		<hr />
-
 		<!-- Main content -->
 		<main>
-			<h2>Converter</h2>
+			<h2>PHC binary decoder</h2>
+			<p>This function enables the conversion of a PHC file into a BASIC file. Refer to the binary decoding below.</p>
+			<hr />
+			<h2>How to</h2>
+			<p>Click the '<b>Load PHC</b>' button. The file will be decoded in the area below. You can copy or save it via the '<b>Save .bas</b>' button.</p>
+			<hr />
 			<!-- Buttons -->
 			<div class="buttons">
 				<button id="loadBtnPhc">Load PHC</button>
 				<button id="saveBtnBas" disabled>Save .bas</button>
 			</div>
+			<hr />
 			<!-- Infos -->
 			<div class="meta">
 				<div><strong>PHC filename:</strong> <span id="phcName">—</span></div>
 				<div><strong>Lignes detected:</strong> <span id="lineCount">0</span></div>
 			</div>
+			<hr />
 			<!-- Output -->
 			<h2>BASIC Code</h2>
 			<textarea id="basOutput" readonly placeholder="Load .phc file to decode BASIC…"></textarea>
