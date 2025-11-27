@@ -1,19 +1,17 @@
 /**
  * ------------------------------------------------------------
  *  Project : Nom du projet
- *  File    : CharEdit.js
+ *  File    : zxP2txt.js
  *  Author  : VincentD
  *  Date    : 2025-11-26
  *  License : CC BY-NC 4.0 International
  * ------------------------------------------------------------
  *  Description:
- *  
- * ZX81 .P to text converter (browser version)
- * - Reads a .P file (ZX81 snapshot) from disk
- * - Parses the program area using the same rules as the C utility
- * - Translates tokens with a full 256-entry charset
- * - Skips inline FP numbers except inside REM lines (like the C code)
- * - Displays the result and allows saving it
+ *    - Reads a .P file (ZX81 snapshot)
+ *    - Parses the program area
+ *    - Translates tokens with a full 256-entry charset
+ *    - Skips inline FP numbers except inside REM lines
+ *    - Displays the result and allows saving it
  *
  *  Notes:
  *    - Compatible with GitHub Pages.

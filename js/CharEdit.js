@@ -1,6 +1,6 @@
 /**
  * ------------------------------------------------------------
- *  Project : Nom du projet
+ *  Project : Build your own graphic (text)
  *  File    : CharEdit.js
  *  Author  : VincentD
  *  Date    : 2025-11-26
@@ -9,6 +9,7 @@
  *  Description:
  *    This script handles the editing and creation
  *    of character grids for the application.
+ *    I use it for the ROM 1.4 for the Sanyo PHC-25.
  *
  *  Notes:
  *    - Uses window.onload to initialize the grid.

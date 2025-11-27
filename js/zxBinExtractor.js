@@ -1,13 +1,14 @@
 /**
  * ------------------------------------------------------------
- *  Project : Nom du projet
+ *  Project : Binary extractor from ZX81 .P file
  *  File    : zxBinExtractor.js
  *  Author  : VincentD
  *  Date    : 2025-11-26
  *  License : CC BY-NC 4.0 International
  * ------------------------------------------------------------
  *  Description:
- *    
+ *    - load a .P file
+ *    - Show content and you can extract the BIN part (Z80)
  *
  *  Notes:
  *    - Compatible with GitHub Pages.

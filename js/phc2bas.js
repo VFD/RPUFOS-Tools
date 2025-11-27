@@ -1,3 +1,52 @@
+/**
+ * ------------------------------------------------------------
+ *  Project : Nom du projet
+ *  File    : CharEdit.js
+ *  Author  : VincentD
+ *  Date    : 2025-11-26
+ *  License : CC BY-NC 4.0 International
+ * ------------------------------------------------------------
+ *  Description:
+ *    
+ *
+ *  Notes:
+ *    - Compatible with GitHub Pages.
+ *    - 
+ * ------------------------------------------------------------
+ */
+
+/*
+  PHC file structure
+
+  - Sync header:
+      10 bytes of value A5h
+
+  - Program name:
+      6 ASCII characters (padded with 00h if shorter)
+
+  - Program body:
+      Repeated blocks of BASIC code encoded in tokens/ASCII
+      Each line ends with 00h
+      Continue until no more lines
+
+  - End of program marker:
+      00h 00h 00h
+
+  - Line index table (stored in reverse order):
+      Each entry is 4 bytes:
+        AL, AH : memory address of the line (little endian)
+        NL, NH : line number (little endian)
+      Repeat until no more entries
+
+  - Trailer:
+      00h FFh FFh FFh FFh followed by padding with 00h bytes
+      (fixed tail section to mark the end of the file)
+*/
+
+
+// Basic Keywords PHC-25 - Order is very important don't change it
+// source : G.Fetis
+
 const keyWords = [
   "END","FOR","NEXT","DATA","INPUT","DIM","READ","LET","GOTO","RUN",
   "IF","RESTORE","GOSUB","RETURN","REM","STOP","OUT","ON","LPRINT","DEF",
@@ -161,3 +210,6 @@ document.getElementById("saveBtnBas").addEventListener("click", () => {
   link.download = phcFilename + ".bas";
   link.click();
 });
+
+
+// -------------------- EOF --------------------

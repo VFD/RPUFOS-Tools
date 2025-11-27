@@ -1,3 +1,20 @@
+/**
+ * ------------------------------------------------------------
+ *  Project : BASIC Sanyo PHC-25 to PHC file
+ *  File    : bas2phc.js
+ *  Author  : VincentD
+ *  Date    : 2025-11-26
+ *  License : CC BY-NC 4.0 International
+ * ------------------------------------------------------------
+ *  Description:
+ *    - Convert BASIC (text format) to PHC binary file
+ *    - PHC file are used in emulator
+ *    - Convert the PHC to WAV in another App for real hardware
+ *  Notes:
+ *    - Compatible with GitHub Pages.
+ *    - 
+ * ------------------------------------------------------------
+ */
 
 /*
   PHC file structure
@@ -243,4 +260,4 @@ document.getElementById("saveBtn").addEventListener("click", () => {
 });
 
 
-// EOF
+// -------------------- EOF --------------------
