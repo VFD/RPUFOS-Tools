@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<!-- Meta information -->
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="Web application to load files, convert them into hexadecimal data blocks, and generate BASIC source code lines for retro-style programming. Includes options for line numbering, encoding formats, and saving output as .bas files.">
+		<meta name="author" content="VincentD">
+		<!-- Page title -->
+		<title>RPUFOS Bin to DATA</title>
+		<!-- CSS stylesheet -->
+		<link rel="stylesheet" href="css/styles.css">
+		<!-- CSS if FOUC -->
+		<!--
+		<link rel="preload" href="styles.css" as="style" onload="this.rel='stylesheet'">
+		<noscript><link rel="stylesheet" href="style.css"></noscript>
+		-->
+		<!-- Favicon (optional) -->
+		<link rel="icon" href="Logos/RPUFOS_Logo.ico" type="image/x-icon">
+		<!-- Scripts éventuels -->
+		<script src="js/bin2data.js" defer></script>
+	</head>
+	<body>
+		<!-- Header section -->
+		<header>
+			<div class="header-container">
+				<a href="index.html">
+					<img src="Logos/RPUFOS_Logo-512.png" alt="Logo" class="logo" />
+				</a>
+				<h1>Binary to DATA for BASIC</h1>
+			</div>
+		</header>
+		<hr />
+		<!-- Main content -->
+		<main>
+			<h2>Objective</h2>
+			<p>Load any file, convert it into 16‑byte hexadecimal blocks, and generate retro BASIC code ready to save as .bas.<br />
+			The memory load command (POKE) is not included; see below.</p>
+			<hr />
+			<!-- Main buttons section -->
+			<div class="buttons">
+				<button id="loadBtn">Load</button>
+				<button id="encodeBtn">Encode</button>
+				<button id="saveBtn">Save</button>
+			</div>
+			<hr />
+			<!-- Displaying the loaded file name -->
+			<div id="filename">No file loaded</div>
+			<hr />
+			<!-- Data encoding options -->
+			<fieldset class="options-extra">
+				<legend>Encoding Options</legend>
+				<label><input type="radio" name="encodingMode" value="comma" checked>16-byte hex block (comma-separated)</label>
+				<br />
+				<label><input type="radio" name="encodingMode" value="concat">16-byte hex block (concatenated)</label>
+				<hr />
+				<label class="form-label">Start line:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="number" id="startLine" value="10"></label>
+				<br />
+				<label class="form-label">Line increment:&nbsp;<input type="number" id="lineIncrement" value="10"></label>
+			</fieldset>
+			<!-- Controls for adjusting text size -->
+			<br />
+			<div class="text-size-controls">
+				<button id="increaseText">A+</button>
+				<button id="decreaseText">A-</button>
+			</div>
+			<hr />
+			<!-- Text area showing the generated BASIC source code -->
+			<textarea id="outputArea" readonly></textarea>
+		</main>
+		<!-- -->
+		<hr />
+		<h3>POKE from DATA: concatenated vs comma‑separated</h3>
+		<p>Expect about <b>30–35% less source size</b> when using concatenated hex strings (16 bytes per line).</p>
+		<section>
+			<h4>Example 1: Concatenated hex blocks</h4>
+			<p>In this version, each DATA line contains a long string of hexadecimal characters representing 16 bytes.
+			The program reads the string, splits it into two-character chunks, converts each chunk into a numeric value,
+			and then POKEs it into memory. The loop continues until the special end marker "ZZ" is reached.</p>
+			<pre><code>
+			100 REM Concatenated hex blocks
+			110 DATA A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5
+			120 DATA ZZ
+			130 ADR = &HC000: REM start address in memory
+			140 READ D$
+			150 IF D$="ZZ" THEN END: REM or GOTO line
+			160 FOR I=1 TO LEN(D$) STEP 2
+			170   V = VAL("&H"+MID$(D$,I,2))
+			180   POKE ADR, V
+			190   ADR = ADR + 1
+			200 NEXT I
+			210 GOTO 40
+			</code></pre>
+		</section>
+		<!-- -->
+		<hr style="width:80%"/>
+		<section>
+			<h4>Example 2: Comma-separated hex values</h4>
+			<p>Here, each DATA line lists hexadecimal values separated by commas.
+			The program reads each value directly, converts it into a number, and POKEs it into memory one by one.
+			The process stops when the "ZZ" marker is encountered, signaling the end of the data.</p>
+			<pre><code>
+			100 REM Comma-separated hex values
+			110 DATA A5,A5,A5,A5,A5,A5,A5,A5,A5,A5,A5,A5,A5,A5,A5,A5
+			120 DATA ZZ
+			130 ADR = &HC000: REM start address in memory
+			140 READ D$
+			150 IF D$="ZZ" THEN END: REM or GOTO line
+			160 V = VAL("&H"+D$)
+			170 POKE ADR, V
+			180 ADR = ADR + 1
+			190 GOTO 40
+			</code></pre>
+		</section>
+		<hr />
+		<!-- Footer section -->
+		<footer>
+			<img src="Logos/CC-BY-NC-ND-EU.png" alt="CC by NC ND EU" />
+			<p>&copy; 2025 VincentD - RPUFOS Work Tools</p>
+		</footer>
+	</body>
+</html>
+<!-- EOF -->
