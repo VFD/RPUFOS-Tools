@@ -19,7 +19,7 @@
   --button-hover-bg: #f0f0f0;
 
   /* Dimensions */
-  --logo-size: 48px;
+  --logo-size: 96px;
   --textarea-height: 600px;
   --radius: 6px;
   --padding: 10px;
@@ -27,7 +27,6 @@
   /* Language column colors */
   --fr-bg: #f9f9f9;   /* subtle gray for French */
   --us-bg: #f9f9f9;   /* subtle gray for US English */
-  
 }
 
 /* Global styles */
@@ -64,7 +63,6 @@ header {
   text-align: center;
 }
 
-
 /* Footer */
 footer {
   text-align: center;
@@ -78,6 +76,21 @@ footer img {
   height: 50px;          /* fixed height */
   width: auto;           /* keep proportions */
 }
+
+fieldset {
+  border-radius: 1em;
+}
+
+/* Apply only to labels with this class */
+.form-label {
+  display: inline-block;  /* allows setting a width */
+  width: 20em;            /* uniform text width */
+  text-align: left;       /* start from the left */
+  margin-right: 1em;      /* space before the input */
+  font-family: monospace;
+}
+
+
 
 /* Buttons section */
 .buttons { 
@@ -145,13 +158,10 @@ textarea {
   text-align: right;
 }
 
-
 /* Text size controls */
 .text-size-controls {
   text-align: center;
   margin-bottom: 8px;
 }
-
-
 
 /* ==================== EOF ===================== */
