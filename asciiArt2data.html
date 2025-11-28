@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<!-- Meta information -->
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="VincentD">
+
+		<!-- Page title -->
+		<title>RPUFOS title</title>
+
+		<!-- CSS stylesheet -->
+		<link rel="stylesheet" href="css/styles.css">
+
+		<!-- CSS if FOUC -->
+		<!--
+		<link rel="preload" href="styles.css" as="style" onload="this.rel='stylesheet'">
+		<noscript><link rel="stylesheet" href="style.css"></noscript>
+		-->
+
+		<!-- Favicon (optional) -->
+		<link rel="icon" href="Logos/RPUFOS_Logo.ico" type="image/x-icon">
+
+		<!-- Scripts éventuels -->
+		<script src="js/asciiArt2data.js" defer></script>
+	</head>
+
+	<body>
+		<!-- Header section -->
+		<header>
+			<div class="header-container">
+				<a href="index.html">
+					<img src="Logos/RPUFOS_Logo-512.png" alt="Logo" class="logo" />
+				</a>
+				<h1>RPUFOS Title</h1>
+			</div>
+		</header>
+
+		<hr />
+
+		<!-- Main content -->
+<main>
+  <h2>ASCII Art to DATA Converter</h2>
+  <p>Load a text file (.txt) or type/paste ASCII Art below, then click Encode to generate BASIC DATA lines.</p>
+  <hr />
+  <!-- Main buttons section -->
+  <div class="buttons">
+    <button id="loadBtn">Load</button>
+    <button id="encodeBtn">Encode</button>
+    <button id="saveBtn">Save</button>
+  </div>
+  <hr />
+  <!-- Displaying the loaded file name -->
+  <div id="filename">No file loaded</div>
+  <hr />
+  <!-- ASCII Art input -->
+  <label for="inputArea" class="form-label">ASCII Art Input:</label>
+  <textarea id="inputArea" placeholder="Paste or type ASCII Art here..."></textarea>
+  <hr />
+  <!-- Data encoding options -->
+  <fieldset class="options-extra">
+    <legend>Encoding Options</legend>
+    <label><input type="radio" name="encodingMode" value="comma" checked>16-byte hex block (comma-separated)</label>
+    <br />
+    <label><input type="radio" name="encodingMode" value="concat">16-byte hex block (concatenated)</label>
+    <hr />
+    <label class="form-label">Start line:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="number" id="startLine" value="10"></label>
+    <br />
+    <label class="form-label">Line increment:&nbsp;<input type="number" id="lineIncrement" value="10"></label>
+  </fieldset>
+  <!-- Controls for adjusting text size -->
+  <br />
+  <div class="text-size-controls">
+    <button id="increaseText">A+</button>
+    <button id="decreaseText">A-</button>
+  </div>
+  <hr />
+  <!-- Text area showing the generated BASIC source code -->
+  <label for="outputArea" class="form-label">Generated DATA Output:</label>
+  <textarea id="outputArea" readonly placeholder="DATA lines will appear here..."></textarea>
+</main>
+
+<!-- Link to external JS -->
+<script src="ascii2data.js"></script>
+
+
+
+
+
+		<hr />
+		
+<pre><code>
+10 READ A$
+20 IF A$="ZZ" THEN END
+30 PRINT CHR$(VAL("&H"+A$));
+40 GOTO 10
+50 DATA 41,42,43,44,ZZ
+</code></pre>
+
+<hr />
+
+<pre><code>
+10 READ S$
+20 IF S$="ZZ" THEN END
+30 FOR I=1 TO LEN(S$) STEP 2
+40   A$=MID$(S$,I,2)
+50   PRINT CHR$(VAL("&H"+A$));
+60 NEXT I
+70 GOTO 10
+80 DATA 41424344
+90 DATA 45464748
+100 DATA ZZ
+</code></pre>
+
+		<hr />
+		<!-- Footer section -->
+		<footer>
+			<img src="Logos/CC-BY-NC-ND-EU.png" alt="CC by NC ND EU" />
+			<p>&copy; 2025 VincentD - RPUFOS Work Tools</p>
+		</footer>
+		
+	</body>
+	
+</html>
+<!-- EOF -->

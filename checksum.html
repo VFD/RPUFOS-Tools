@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+	<!-- Head -->
+	<head>
+		<!-- Meta information -->
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="Checksum and Hash Algorithms. CRC16, CRC32, MD5, SHA-1, SHA-256, SHA-384, SHA-512">
+		<meta name="author" content="VincentD">
+		<!-- Page title -->
+		<title>RPUFOS Checksum and Hash Algorithms</title>
+		<!-- CSS stylesheet -->
+		<link rel="stylesheet" href="css/styles.css">
+		
+<style>
+  /* Override only for this page */
+  #outputArea {
+    height: 200px; /* smaller height */
+	font-size: 1em; /* smaller text size */
+  }
+</style>
+
+		<!-- CSS if FOUC -->
+		<!--
+		<link rel="preload" href="styles.css" as="style" onload="this.rel='stylesheet'">
+		<noscript><link rel="stylesheet" href="style.css"></noscript>
+		-->
+		<!-- Favicon (optional) -->
+		<link rel="icon" href="Logos/RPUFOS_Logo.ico" type="image/x-icon">
+		<!-- Scripts éventuels -->
+		<script src="js/md5.js" defer></script>		<!-- needed -->
+		<script src="js/checksum.js" defer></script>
+	</head>
+	<!--  -->
+	<body>
+		<!-- Header section -->
+		<header>
+			<div class="header-container">
+				<a href="index.html">
+					<img src="Logos/RPUFOS_Logo-512.png" alt="Logo" class="logo" />
+				</a>
+				<h1>RPUFOS Checksum and Hash Algorithms</h1>
+			</div>
+		</header>
+		<hr />
+		<!-- Main content -->
+		<main>
+		<!-- Buttons section -->
+		<div class="buttons">
+			<button id="loadBtn">Load</button>
+			<button id="saveBtn">Save</button>
+		</div>
+		<hr />
+		<!-- Display loaded filename -->
+		<div id="filename"></div>
+		<hr />
+		<!-- Text size controls -->
+		<div class="text-size-controls">
+			<button id="increaseText">A+</button>
+			<button id="decreaseText">A-</button>
+		</div>
+		<hr />
+		<!-- Output textarea -->
+		<textarea id="outputArea" readonly></textarea>
+		<hr />
+		<h2>Checksum and Hash Algorithms</h2>
+		<p>Checksums and hash functions are mathematical tools used to verify data integrity. 
+		Checksums like CRC are designed to detect accidental errors in transmission or storage, 
+		while cryptographic hashes such as SHA are built to provide stronger guarantees against tampering. 
+		Together, they play a vital role in computing, networking, and security.</p>
+		<h3>CRC16</h3>
+		<p>CRC16 is a smaller 16-bit version of the cyclic redundancy check. It is commonly used in embedded systems 
+		and communication protocols where lightweight error detection is sufficient. Like CRC32, it is designed 
+		for error detection, not cryptographic security.</p>
+		<h3>CRC32</h3>
+		<p>CRC32 is a cyclic redundancy check that produces a 32-bit value. It is widely used in file formats, 
+		network protocols, and storage devices to detect accidental changes in data. While fast and efficient, 
+		it is not secure against intentional tampering.</p>
+		<h3>MD5</h3>
+		<p>MD5 generates a 128-bit hash value and was once popular for verifying file integrity. However, it is now 
+		considered cryptographically broken because collisions can be found easily. Today, MD5 is used only for 
+		non-security purposes such as quick checksums.</p>
+		<h3>SHA-1</h3>
+		<p>SHA-1 produces a 160-bit hash and was widely used in digital signatures and certificates. It is now 
+		deprecated for security applications because researchers have demonstrated practical collision attacks. 
+		Despite this, it still appears in legacy systems.</p>
+		<h3>SHA-256</h3>
+		<p>SHA-256 is part of the SHA-2 family and generates a 256-bit hash. It is currently one of the most widely 
+		used secure hashing algorithms, powering SSL/TLS certificates, blockchain technologies, and secure file 
+		verification.</p>
+		<h3>SHA-384</h3>
+		<p>SHA-384 is another member of the SHA-2 family, producing a 384-bit hash. It offers stronger security 
+		margins than SHA-256 and is often used in government and enterprise applications where higher assurance 
+		is required.</p>
+		<h3>SHA-512</h3>
+		<p>SHA-512 outputs a 512-bit hash and is the largest variant of the SHA-2 family. It provides very strong 
+		resistance against collisions and preimage attacks, though it is slower on 32-bit systems. It is favored 
+		in environments where maximum security is needed.</p>
+		<h3>Conclusion</h3>
+		<p>From simple checksums like CRC16 and CRC32 to legacy hashes such as MD5 and SHA-1, and finally to modern 
+		secure algorithms like SHA-256, SHA-384, and SHA-512, the evolution of these techniques reflects the growing 
+		need for stronger protection against data corruption and malicious attacks. While older methods remain useful 
+		for error detection, modern cryptographic hashes are essential for ensuring trust and security in today’s 
+		digital world.</p>
+		</main>
+		<hr />
+		<!-- Footer section -->
+		<footer>
+			<img src="Logos/CC-BY-NC-ND-EU.png" alt="CC by NC ND EU" />
+			<p>&copy; 2025 VincentD - RPUFOS Work Tools</p>
+		</footer>
+	</body>
+</html>
+<!-- EOF -->
