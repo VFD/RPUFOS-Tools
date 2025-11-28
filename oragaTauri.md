@@ -3,7 +3,7 @@
 # base pour tauri
 
 
-
+```
 mon-projet/
  ├─ index.html              # point d'entrée
  ├─ css/
@@ -25,7 +25,7 @@ mon-projet/
      └─ workflows/
          ├─ build-tauri.yml # workflow pour générer les binaires
          └─ pages.yml       # workflow pour déployer sur Pages
-
+```
 
 
 
