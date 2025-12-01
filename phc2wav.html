@@ -15,29 +15,6 @@
 		<link rel="stylesheet" href="css/styles.css">
 
 <style>
-.textarea-container {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  width: 96%;
-  margin: 0 auto;
-}
-
-.textarea-container textarea {
-  flex: 1;
-  height: var(--textarea-height);
-  font-family: monospace;
-  font-size: 1.2em;
-  padding: 10px;
-  box-sizing: border-box;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-  background: #fff;
-  resize: none;
-  white-space: pre;
-  overflow-x: auto;
-  overflow-y: auto;
-}
 
 #duration {
   width: 96%;
@@ -48,6 +25,36 @@
   background: var(--highlight-bg);
   padding: 6px 10px;
   border-radius: 4px;
+}
+
+.textarea-container {
+  display: flex;
+  gap: 10px;
+  width: 96%;
+  margin: 0 auto;
+}
+
+.textarea-block {
+  display: flex;
+  flex-direction: column;
+  flex: 1; /* occupe toute la largeur disponible */
+}
+
+.textarea-label {
+  font-family: monospace;
+  font-size: 1.2em;
+  margin-bottom: 0.5em;
+  color: var(--text-color);
+  text-align: center;
+  font-weight: bold;
+}
+
+.textarea-block textarea {
+  flex: 1;              /* prend toute la hauteur disponible */
+  min-height: 300px;    /* hauteur minimale pour éviter 2 lignes */
+  resize: vertical;     /* permet à l’utilisateur de redimensionner si besoin */
+  font-family: monospace;
+  font-size: 14px;
 }
 
 </style>
@@ -102,11 +109,29 @@
       <button id="decreaseText">A-</button>
       <button id="increaseText">A+</button>
     </div>
-    <div class="textarea-container">
-      <textarea id="sourceOutput" readonly></textarea>
-      <textarea id="wavOutput" readonly></textarea>
-    </div>
+	<hr />
+	
+<div class="textarea-container">
+  <!-- Bloc source -->
+  <div class="textarea-block">
+    <div class="textarea-label">Source PHC (hex dump)</div>
+    <textarea id="sourceOutput" readonly></textarea>
+  </div>
+
+  <!-- Bloc WAV -->
+  <div class="textarea-block">
+    <div class="textarea-label">Converted WAV (frames)</div>
+    <textarea id="wavOutput" readonly></textarea>
+  </div>
+</div>
+
+	
   </section>
+  
+  <hr />
+  <h2>To do </h2>
+  <p>information</p>
+  
 </main>
 
 

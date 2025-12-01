@@ -3,11 +3,13 @@
  *  Project : Nom du projet
  *  File    : CharEdit.js
  *  Author  : VincentD
- *  Date    : 2025-11-26
+ *  Date    : December 1, 2025
  *  License : CC BY-NC 4.0 International
  * ------------------------------------------------------------
- *  Description:
- *    
+ *  Description: Convert PHC binary files to WAV format in browser.
+ *               This is a faithful port of the provided C# logic
+ *               (WaveConversion.cs and WaveData.cs), designed for
+ *               cassette restoration and valid PCM WAV output.
  *
  *  Notes:
  *    - Compatible with GitHub Pages.
@@ -16,24 +18,16 @@
  */
 
 /* ============================================================
-   File: phcToWav.js
-   Description: Convert PHC binary files to WAV format in browser.
-                This is a faithful port of the provided C# logic
-                (WaveConversion.cs and WaveData.cs), designed for
-                cassette restoration and valid PCM WAV output.
-   Author: VincentD (ported to JS)
-   Created: December 1, 2025
-   ============================================================
-
+ 
    OVERVIEW
    --------
    The application performs the following:
-   1) UI: Load a PHC file, display its hex dump in a "source" textarea.
+   1) Load a PHC file, display its hex dump in a "source" textarea.
    2) Conversion: Encode PHC bytes into an audio payload as per C# logic:
       - Silence, synchronization high bits, framed header (16 bytes),
         more high bits, framed program bytes, tail sync, trailing silence.
    3) WAV Header: Build a valid RIFF/WAVE header for 8-bit PCM, mono, 9600 Hz.
-   4) UI: Display the hex dump of the converted WAV in a second textarea.
+   4)  Display the the converted WAV in a second textarea.
    5) Save: Download the WAV file to disk with .wav extension.
    6) Accessibility: A- / A+ buttons to adjust font size of both textareas.
 
@@ -53,27 +47,6 @@
    - The Save process uses Blob and a temporary object URL.
 
    ============================================================ */
-
-/* ============================================================
-   File: phcToWav.js
-   Description: Convert PHC binary files to WAV format in browser.
-                Faithful port of C# WaveConversion.cs and WaveData.cs.
-   Author: VincentD (ported to JS)
-   Created: December 1, 2025
-   ============================================================
-
-   OVERVIEW
-   --------
-   - Load PHC file and show hex dump in left textarea.
-   - Convert PHC bytes into WAV audio payload (silence, sync bits,
-     framed header, program data, tail sync, trailing silence).
-   - Build valid RIFF/WAVE header (PCM 8-bit mono, 9600 Hz).
-   - Show logical frames or hex dump of WAV in right textarea.
-   - Save WAV file with same name but .wav extension.
-   - Adjust font size of both textareas with A- / A+ buttons.
-
-   ============================================================ */
-
 
 /* ==========================
    Global State
@@ -229,14 +202,6 @@ function convertPhcToWav(inBytes) {
    UI Wiring
    ========================== */
 
-function updateSourceView(name,bytes){
-  document.getElementById("filename").textContent=name||"No file loaded";
-  document.getElementById("sourceOutput").value=formatHexDump(bytes||new Uint8Array());
-}
-function updateWavView(bytes){
-  document.getElementById("wavOutput").value=formatHexDump(bytes||new Uint8Array());
-}
-
 // Load button
 document.getElementById("loadBtn").addEventListener("click",()=>document.getElementById("file").click());
 
@@ -269,13 +234,18 @@ function updateSourceView(name, bytes) {
 }
 
 // Update WAV view and duration
-function updateWavView(bytes, phcLength) {
-  document.getElementById("wavOutput").value = formatHexDump(bytes || new Uint8Array());
-  if (phcLength) {
-    const seconds = estimateWavDurationSeconds(phcLength);
+function updateWavView(phcBytes) {
+  // Show logical frames instead of raw hex
+  document.getElementById("wavOutput").value = formatFrames(phcBytes || new Uint8Array());
+  // Update duration line based on PHC length
+  if (phcBytes && phcBytes.length) {
+    const seconds = estimateWavDurationSeconds(phcBytes.length);
     document.getElementById("duration").textContent = "Duration: " + seconds.toFixed(2) + " s";
+  } else {
+    document.getElementById("duration").textContent = "Duration: N/A";
   }
 }
+
 
 // Convert button
 document.getElementById("convertBtn").addEventListener("click", () => {
@@ -283,13 +253,11 @@ document.getElementById("convertBtn").addEventListener("click", () => {
     alert("No file loaded.");
     return;
   }
-  // Perform conversion (still needed for Save)
+  // Perform conversion
   convertedWavBytes = convertPhcToWav(loadedBytes);
-   // Show logical frames
-  document.getElementById("wavOutput").value = formatFrames(loadedBytes);
+  // Show logical frames and update duration
+  updateWavView(loadedBytes);
 });
-
-
 
 /**
  * Format a single byte into a framed binary string.
@@ -336,8 +304,6 @@ function formatFrames(phcBytes) {
 
   return lines.join("\n");
 }
-
-
 
 
 // Save button
