@@ -76,3 +76,15 @@
 
 ## 🔄 Exemple complet
 Tracer un carré avec le stylo 1 :
+
+
+'''
+IN;
+SP1;
+PU100,100;
+PD200,100;
+PD200,200;
+PD100,200;
+PD100,100;
+PU;
+'''
