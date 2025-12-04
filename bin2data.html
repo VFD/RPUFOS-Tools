@@ -91,6 +91,14 @@
 			200 NEXT I
 			210 GOTO 40
 			</code></pre>
+			<p>Concatenated</p>
+			<code><pre>
+			1000 REM Sub-routine
+			1010 ADR = &HC000: REM start address in memory
+			1020 READ D$:IF D$="ZZ" THEN 1040
+			1030 FOR I=1 TO LEN(D$) STEP 2: V=VAL("&H"+MID$(D$,I,2)):POKE ADR,V:ADR=ADR+1:NEXT
+			1040 RETURN
+			</code></pre>
 		</section>
 		<!-- -->
 		<hr style="width:80%"/>

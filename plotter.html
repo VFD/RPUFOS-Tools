@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<!-- Meta information -->
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="VincentD">
+
+		<!-- Page title -->
+		<title>RPUFOS title</title>
+
+		<!-- CSS stylesheet -->
+		<link rel="stylesheet" href="css/styles.css">
+		<link rel="stylesheet" href="css/plotter.css">
+
+		<!-- CSS if FOUC -->
+		<!--
+		<link rel="preload" href="styles.css" as="style" onload="this.rel='stylesheet'">
+		<noscript><link rel="stylesheet" href="style.css"></noscript>
+		-->
+
+		<!-- Favicon (optional) -->
+		<link rel="icon" href="Logos/RPUFOS_Logo.ico" type="image/x-icon">
+
+		<!-- Scripts éventuels -->
+		<!-- <script src="js/com.js" defer></script> -->
+		<!-- <script src="js/plotter.js" defer></script> -->
+	</head>
+
+	<body>
+		<!-- Header section -->
+		<header>
+			<div class="header-container">
+				<a href="index.html">
+					<img src="Logos/RPUFOS_Logo-512.png" alt="Logo" class="logo" />
+				</a>
+				<h1>RPUFOS HP‑GL protocol</h1>
+			</div>
+		</header>
+
+		<hr />
+		<h2>Explain</h2>
+<p>This project demonstrates the HP‑GL protocol using a virtual plotter with four pens to draw and test basic commands.</p>
+<p>Examples of plotters: HP 7470A, HP 7580A, Roland DXY‑990, ALPS MD series, Canon X‑07, Commodore VIC‑1520, Atari 1020</p>
+
+		<hr />
+
+		<!-- Main content -->
+<main>
+  <!-- Section Open COM -->
+  <section class="com">
+    <h2>Port COM</h2>
+    <label>Baudrate
+      <input type="number" id="baudrate" value="9600" min="300" step="300">
+    </label>
+    <label>Data bits
+      <input type="number" id="dataBits" value="8" min="5" max="8">
+    </label>
+    <label>Parity
+      <select id="parity">
+        <option value="none" selected>none</option>
+        <option value="even">even</option>
+        <option value="odd">odd</option>
+      </select>
+    </label>
+    <label>Stop bits
+      <input type="number" id="stopBits" value="1" min="1" max="2">
+    </label>
+	<br /><br />
+    <button id="btnOpenCom">Ouvrir COM</button>
+    <button id="btnCloseCom">Fermer COM</button>
+    <span id="comStatus">Closed</span>
+	<p>🚧 ⚠️ Under development</p>
+
+  </section>
+
+<hr />
+<!-- Section Load file -->
+<section class="files">
+  <h2>File to load</h2>
+  <p>Typically saved as a .plt file.</p>
+  <input type="file" id="fileInput">
+  <br /><br />
+  <span id="filename">Aucun fichier chargé</span>
+</section>
+
+<hr />
+  <!-- Section principale en 20% / 80% -->
+<!-- Zone commandes (20%) -->
+<section class="layout">
+    <div class="commands">
+      <h3 style="text-align:center;">Cmds HP‑GL</h3>
+      <textarea id="commandsArea"></textarea><br>
+      <button id="btnTrace">Tracer</button>
+      <label><input type="checkbox" id="autoplay"> Autoplay</label>
+      <br><br>
+      <label>Nom du fichier :
+        <input type="text" id="plotterName" value="Plotter"> .plt
+      </label>
+      <br><br>
+      <button id="btnSaveCommands">Save</button>
+    </div>
+
+
+    <!-- Zone canvas (80%) -->
+    <div class="canvas">
+      <div class="canvas-inner">
+        <h3 style="text-align:center;">Canvas</h3>
+        <button id="btnNew">Reset</button>
+        <button id="btnSavePNG">Save PNG</button>
+        <button id="btnSaveSVG">Save SVG</button>
+        <hr />
+        <label>Stylo 1
+          <select id="pen1Color">
+            <option value="#000000" selected>Noir</option>
+            <option value="#ff0000">Rouge</option>
+            <option value="#00ff00">Vert</option>
+            <option value="#0000ff">Bleu</option>
+          </select>
+        </label>
+        <label>Stylo 2
+          <select id="pen2Color">
+            <option value="#000000">Noir</option>
+            <option value="#ff0000" selected>Rouge</option>
+            <option value="#00ff00">Vert</option>
+            <option value="#0000ff">Bleu</option>
+          </select>
+        </label>
+        <label>Stylo 3
+          <select id="pen3Color">
+            <option value="#000000">Noir</option>
+            <option value="#ff0000">Rouge</option>
+            <option value="#00ff00" selected>Vert</option>
+            <option value="#0000ff">Bleu</option>
+          </select>
+        </label>
+        <label>Stylo 4
+          <select id="pen4Color">
+            <option value="#000000">Noir</option>
+            <option value="#ff0000">Rouge</option>
+            <option value="#00ff00">Vert</option>
+            <option value="#0000ff" selected>Bleu</option>
+          </select>
+        </label>
+		<hr />
+        <canvas id="plotCanvas" width="800" height="600"></canvas>
+      </div>
+    </div>
+  </section>
+
+<hr />
+
+<!-- ================================================== -->
+<!-- DEFINITIONS -->
+<!-- ================================================== -->
+
+<section>
+
+  <p>Source of documentation : <a href="https://www.isoplotec.co.jp/HPGL/eHPGL.htm" target="_blank">HP-GL Reference Guide</a></p>
+
+  <details>
+    <summary>📘 HP‑GL Commands</summary>
+
+    <details>
+      <summary>1. Setup of Plotter</summary>
+      <ul>
+        <li><b>IN</b> – Initialize<br>Resets the plotter to its default state.</li>
+        <li><b>DF</b> – Default<br>Restores factory default settings.</li>
+        <li><b>IP</b> – Input P1 and P2<br>Defines input reference points for scaling.</li>
+        <li><b>SC</b> – Scale<br>Sets scaling factors for user coordinates.</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>2. Basic Plot Commands</summary>
+      <ul>
+        <li><b>SP</b> – Select Pen<br>Selects the active pen by number.</li>
+        <li><b>PU</b> – Pen Up<br>Lifts the pen to move without drawing.</li>
+        <li><b>PD</b> – Pen Down<br>Lowers the pen to draw lines.</li>
+        <li><b>PA</b> – Plot Absolute<br>Moves the pen to absolute coordinates.</li>
+        <li><b>PR</b> – Plot Relative<br>Moves the pen relative to its current position.</li>
+        <li><b>LT</b> – Line Type<br>Sets line style (solid, dashed, dotted).</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>3. Plot of Circle, Arc, and Polygon</summary>
+      <ul>
+        <li><b>CT</b> – Chord Tolerance<br>Controls curve approximation accuracy.</li>
+        <li><b>CI</b> – Circle<br>Draws a circle centered at the current position.</li>
+        <li><b>AA</b> – Arc Absolute<br>Draws an arc around an absolute center point.</li>
+        <li><b>AR</b> – Arc Relative<br>Draws an arc around a relative center point.</li>
+        <li><b>FT</b> – Fill Type<br>Sets the fill pattern (solid, hatch, etc.).</li>
+        <li><b>PT</b> – Pen Thickness<br>Defines stroke thickness for filled areas or text.</li>
+        <li><b>WG</b> – Fill Wedge<br>Draws a filled wedge (circular sector).</li>
+        <li><b>EW</b> – Edge Wedge<br>Draws the outline of a wedge.</li>
+        <li><b>RA</b> – Fill Rectangle Absolute<br>Draws a filled rectangle using absolute coordinates.</li>
+        <li><b>EA</b> – Edge Rectangle Absolute<br>Draws a rectangle outline using absolute coordinates.</li>
+        <li><b>RR</b> – Fill Rectangle Relative<br>Draws a filled rectangle using relative coordinates.</li>
+        <li><b>ER</b> – Edge Rectangle Relative<br>Draws a rectangle outline using relative coordinates.</li>
+        <li><b>PM</b> – Polygon Mode<br>Begins polygon definition.</li>
+        <li><b>EP</b> – Edge Polygon<br>Draws the outline of the polygon.</li>
+        <li><b>FP</b> – Fill Polygon<br>Fills the defined polygon.</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>4. Character Plot Commands</summary>
+      <ul>
+        <li><b>LB</b> – Label<br>Outputs text at the current pen position.</li>
+        <li><b>DT</b> – Define Terminator<br>Defines the terminator character for labels.</li>
+        <li><b>SI</b> – Absolute Character Size<br>Sets character width and height in centimeters.</li>
+        <li><b>SR</b> – Relative Character Size<br>Sets character size relative to scaling points.</li>
+        <li><b>SU</b> – User Unit Character Size<br>Defines character size in user units.</li>
+        <li><b>SL</b> – Character Slant<br>Defines italic slant using tangent of angle.</li>
+        <li><b>DI</b> – Absolute Direction<br>Sets text direction using run/rise values.</li>
+        <li><b>DR</b> – Relative Direction<br>Sets text direction relative to scaling points.</li>
+        <li><b>DU</b> – User Unit Direction<br>Defines text direction in user units.</li>
+        <li><b>DV</b> – Vertical Label Direction<br>Switches between horizontal and vertical writing.</li>
+        <li><b>LO</b> – Label Origin<br>Controls alignment of text relative to pen position.</li>
+        <li><b>CP</b> – Character Plot<br>Moves pen by a number of character cells.</li>
+        <li><b>ES</b> – Extra Space<br>Adjusts spacing between characters and lines.</li>
+        <li><b>BL</b> – Buffer Label<br>Stores a string in a buffer.</li>
+        <li><b>PB</b> – Print Buffered Label<br>Prints the buffered string.</li>
+        <li><b>CS</b> – Designate Standard Character Set<br>Selects the standard character set.</li>
+        <li><b>CA</b> – Designate Alternate Character Set<br>Selects the alternate character set.</li>
+        <li><b>SS</b> – Select Standard Character Set<br>Activates the standard character set.</li>
+        <li><b>SA</b> – Select Alternate Character Set<br>Activates the alternate character set.</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>5. Change of Plot Area</summary>
+      <ul>
+        <li><b>IW</b> – Input Window<br>Defines a clipping window for plotting.</li>
+        <li><b>RO</b> – Rotate Coordinate System<br>Rotates the coordinate system by 90° increments.</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>6. Plotter Control</summary>
+      <ul>
+        <li><b>PG</b> – Page<br>Ejects the current page.</li>
+        <li><b>AF</b> – Advance Full Page<br>Feeds paper forward one full page.</li>
+        <li><b>NR</b> – Not Ready<br>Sets plotter to not‑ready state.</li>
+        <li><b>PS</b> – Paper Size<br>Defines paper size for plotting.</li>
+      </ul>
+    </details>
+
+  </details>
+</section>
+
+
+
+<!-- ================================================== -->
+<!-- END DEFINITIONS -->
+<!-- ================================================== -->
+
+
+</main>
+		<hr />
+		<!-- Footer section -->
+		<footer>
+			<img src="Logos/CC-BY-NC-ND-EU.png" alt="CC by NC ND EU" />
+			<p>&copy; 2025 VincentD - RPUFOS Work Tools</p>
+		</footer>
+
+
+<script src="js/plotter.js" defer></script>
+
+	</body>
+	
+</html>
+<!-- EOF -->
