@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<!-- Meta information -->
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="VincentD">
+
+		<!-- Page title -->
+		<title>RPUFOS BIN to PHC</title>
+
+		<!-- CSS stylesheet -->
+		<link rel="stylesheet" href="css/styles.css">
+
+		<!-- CSS if FOUC -->
+		<!--
+		<link rel="preload" href="styles.css" as="style" onload="this.rel='stylesheet'">
+		<noscript><link rel="stylesheet" href="style.css"></noscript>
+		-->
+
+		<!-- Favicon (optional) -->
+		<link rel="icon" href="Logos/RPUFOS_Logo.ico" type="image/x-icon">
+
+		<!-- Scripts éventuels -->
+		<script src="js/bin2phc.js" defer></script>
+	</head>
+
+	<body>
+		<!-- Header section -->
+		<header>
+			<div class="header-container">
+				<a href="index.html">
+					<img src="Logos/RPUFOS_Logo-512.png" alt="Logo" class="logo" />
+				</a>
+				<h1>RPUFOS BIN to PHC</h1>
+			</div>
+		</header>
+		<!-- -->
+		<hr />
+		<h3>Binary to .phc</h3>
+		<p>Load your BIN file, specify the entry point address, and then generate the PHC output.</p>
+		<hr />
+		<!-- Main content -->
+		<main>
+			<!-- Buttons -->
+			<div class="buttons">
+				<button id="loadBtn">Load BIN</button>
+				<button id="convertBtn">Convert</button>
+				<button id="saveBtn">Save PHC</button>
+			</div>
+			<!-- Filename display -->
+			<div id="filename">No file loaded</div>
+			<hr />
+			<!-- Start address control -->
+			<div class="options-extra">
+				<label class="form-label">Entry point of the binary program (hex):</label>
+				<input type="text" id="startAddr" value="0xC009" />
+			</div>
+			<hr />
+			<h3>Hexa view of binary and phc file</h3>
+			<!-- Two textareas side by side -->
+			<div style="display:flex; gap: 12px; align-items:flex-start; justify-content:center;">
+				<!-- Left textarea: BIN hex -->
+				<div style="flex:1;">
+				<fieldset>
+					<legend>BIN (hex view)</legend>
+					<div class="text-size-controls">
+						<button id="binFontInc">A+</button>
+						<button id="binFontDec">A-</button>
+					</div>
+					<textarea id="binHex" readonly></textarea>
+				</fieldset>
+				</div>
+				<!-- Right textarea: PHC hex -->
+				<div style="flex:1;">
+					<fieldset>
+					<legend>PHC (hex view)</legend>
+					<div class="text-size-controls">
+						<button id="phcFontInc">A+</button>
+						<button id="phcFontDec">A-</button>
+					</div>
+					<textarea id="phcHex" readonly></textarea>
+				</fieldset>
+				</div>
+			</div>
+			<hr />
+			<!-- -->
+			<h3>Explanation</h3>
+			<p>
+			  The binary is merged with a bootloader.<br />
+			  The bootloader is a single BASIC line:
+			  <pre><code>
+			  10 CALL &Hnnnn
+			  </code></pre>
+			  <em>nnnn</em> is the entry point of the binary (default &HC009).
+			</p>
+			<p>Source: Sylvain Glaize: <a href="https://gitlab.com/mokona/phc25_tools" target="_blank">Gitlab</a></p>
+		</main>
+		<!-- -->
+		<hr />
+		<!-- Footer section -->
+		<footer>
+			<img src="Logos/CC-BY-NC-ND-EU.png" alt="CC by NC ND EU" />
+			<p>&copy; 2025 VincentD - RPUFOS Work Tools</p>
+		</footer>
+		
+	</body>
+	
+</html>
+<!-- EOF -->
