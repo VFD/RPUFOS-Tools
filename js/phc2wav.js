@@ -1,7 +1,7 @@
 /**
  * ------------------------------------------------------------
  *  Project : Nom du projet
- *  File    : CharEdit.js
+ *  File    : phc2wav.js
  *  Author  : VincentD
  *  Date    : December 1, 2025
  *  License : CC BY-NC 4.0 International

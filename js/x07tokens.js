@@ -1,0 +1,186 @@
+/*
+ * X07tokens.js
+ * Tables for Canon X‑07 BAS ↔ CAS conversion
+ * UTF‑8 map, escape sequences, and BASIC tokens
+ * Version const + IIFE : encapsulé mais exposé dans window
+ */
+
+(function(global) {
+
+// ======================= UTF‑8 Map =======================
+const X07_UTF8 = {
+  "¥": 0x5C, "¿": 0x7F, "♠": 0x80, "♥": 0x81, "♣": 0x82, "♦": 0x83,
+  "○": 0x84, "●": 0x85, "Ä": 0x86, "Å": 0x87, "ä": 0x88, "à": 0x89,
+  "â": 0x8A, "á": 0x8B, "å": 0x8C, "ï": 0x8F, "ì": 0x90, "î": 0x91,
+  "í": 0x92, "Ü": 0x93, "ü": 0x94, "ù": 0x95, "û": 0x96, "ú": 0x97,
+  "É": 0x98, "ë": 0x99, "è": 0x9A, "ê": 0x9B, "é": 0x9C, "Ö": 0x9D,
+  "ö": 0x9E, "ò": 0x9F, "ô": 0xE0, "ó": 0xE1, "õ": 0xE2, "ÿ": 0xE3,
+  "Ç": 0xE4, "ç": 0xE5, "Ñ": 0xE6, "ñ": 0xE7, "Γ": 0xE8, "Σ": 0xE9,
+  "Π": 0xEA, "Ω": 0xEB, "α": 0xEC, "β": 0xED, "γ": 0xEE, "δ": 0xEF,
+  "ε": 0xF0, "σ": 0xF1, "θ": 0xF2, "κ": 0xF3, "λ": 0xF4, "μ": 0xF5,
+  "ρ": 0xF6, "π": 0xF7, "τ": 0xF8, "ψ": 0xF9, "χ": 0xFA, "ω": 0xFB,
+  "ν": 0xFC, "£": 0xFD, "¢": 0xFE, "÷": 0xFF
+};
+
+// ======================= Escapes =======================
+const X07_ESCAPES = {
+  "\\": 0x5C, "YN": 0x5C, "?": 0x7F, "SP": 0x80, "HT": 0x81, "DI": 0x82,
+  "CL": 0x83, "@": 0x84, "LD": 0x85, ":A": 0x86, ".A": 0x87, "AN": 0x87,
+  ":a": 0x88, "`a": 0x89, "^a": 0x8A, "'a": 0x8B, ".a": 0x8C, "_a": 0x8D,
+  ":I": 0x8E, ":i": 0x8F, "`i": 0x90, "^i": 0x91, "'i": 0x92, ":U": 0x93,
+  ":u": 0x94, "`u": 0x95, "^u": 0x96, "'u": 0x97, "'E": 0x98, ":e": 0x99,
+  "`e": 0x9A, "^e": 0x9B, "'e": 0x9C, ":O": 0x9D, ":o": 0x9E, "`o": 0x9F,
+  "RT": 0xA0, "^o": 0xE0, "'o": 0xE1, "_o": 0xE2, ":y": 0xE3, ",C": 0xE4,
+  ",c": 0xE5, "~N": 0xE6, "~n": 0xE7, "GA": 0xE8, "SI": 0xE9, "SM": 0xE9,
+  "PI": 0xEA, "OM": 0xEB, "al": 0xEC, "bt": 0xED, "ga": 0xEE, "dl": 0xEF,
+  "ep": 0xF0, "si": 0xF1, "th": 0xF2, "ka": 0xF3, "la": 0xF4, "mu": 0xF5,
+  "rh": 0xF6, "pi": 0xF7, "ta": 0xF8, "ps": 0xF9, "ch": 0xFA, "om": 0xFB,
+  "nu": 0xFC, "PN": 0xFD, "CN": 0xFE, ":-": 0xFF
+};
+
+// ======================= Tokens BASIC =======================
+// Flags for special behavior
+const FLAG_TRANSPARENT = 0x01;  // DATA, REM, '
+const FLAG_PREFIX_COLON = 0x02; // ELSE, '
+const FLAG_REM_BEFORE   = 0x04; // ' inserts REM first
+
+const X07_TOKENS = [
+  { t: "^",       v: 0xD5 },
+  { t: "\\",      v: 0xDB },
+  { t: "XOR",     v: 0xD8 },
+  { t: "VARPTR",  v: 0xC4 },
+  { t: "VAL",     v: 0xF4 },
+  { t: "USR",     v: 0xC5 },
+  { t: "USING",   v: 0xBD },
+  { t: "TR",      v: 0x91 },
+  { t: "TO",      v: 0xBB },
+  { t: "TKEY",    v: 0xF7 },
+  { t: "TIME$",   v: 0xC9 },
+  { t: "THEN",    v: 0xCE },
+  { t: "TAN",     v: 0xEA },
+  { t: "TAB(",    v: 0xBA },
+  { t: "STRING$", v: 0xC0 },
+  { t: "STRIG",   v: 0xFD },
+  { t: "STR$",    v: 0xF3 },
+  { t: "STOP",    v: 0x8F },
+  { t: "STICK",   v: 0xFC },
+  { t: "STEP",    v: 0xD0 },
+  { t: "START$",  v: 0xCA },
+  { t: "SQR",     v: 0xE4 },
+  { t: "SNS",     v: 0xC6 },
+  { t: "SLEEP",   v: 0xAD },
+  { t: "SIN",     v: 0xE9 },
+  { t: "SGN",     v: 0xDF },
+  { t: "SCREEN",  v: 0xCD },
+  { t: "SAVE",    v: 0xB3 },
+  { t: "RUN",     v: 0x89 },
+  { t: "RND",     v: 0xE5 },
+  { t: "RIGHT$",  v: 0xF9 },
+  { t: "RETURN",  v: 0x8D },
+  { t: "RESUME",  v: 0x99 },
+  { t: "RESTORE", v: 0x8B },
+  { t: "REM",     v: 0x8E, f: FLAG_TRANSPARENT },
+  { t: "READ",    v: 0x86 },
+  { t: "PSET",    v: 0xAA },
+  { t: "PRINT",   v: 0x9F },
+  { t: "PRESET",  v: 0xAB },
+  { t: "POS",     v: 0xE3 },
+  { t: "POKE",    v: 0x9E },
+  { t: "POINT",   v: 0xFE },
+  { t: "PEEK",    v: 0xEC },
+  { t: "PAINT",   v: 0xB1 },
+  { t: "OUT",     v: 0x9A },
+  { t: "OR",      v: 0xD7 },
+  { t: "ON",      v: 0x9B },
+  { t: "OFF",     v: 0xAC },
+  { t: "NOT",     v: 0xCF },
+  { t: "NEXT",    v: 0x82 },
+  { t: "NEW",     v: 0xB9 },
+  { t: "MOTOR",   v: 0x92 },
+  { t: "MOD",     v: 0xDA },
+  { t: "MID$",    v: 0xFA },
+  { t: "LPRINT",  v: 0x9C },
+  { t: "LOG",     v: 0xE6 },
+  { t: "LOCATE",  v: 0xA9 },
+  { t: "LOAD",    v: 0xB2 },
+  { t: "LLIST",   v: 0xA2 },
+  { t: "LIST",    v: 0xA1 },
+  { t: "LINE",    v: 0x97 },
+  { t: "LET",     v: 0x87 },
+  { t: "LEN",     v: 0xF1 },
+  { t: "LEFT$",   v: 0xF8 },
+  { t: "KEY$",    v: 0xCC },
+  { t: "INT",     v: 0xE0 },
+  { t: "INSTR",   v: 0xC1 },
+  { t: "INPUT",   v: 0x84 },
+  { t: "INP",     v: 0xC3 },
+  { t: "INKEY$",  v: 0xC2 },
+  { t: "INIT",    v: 0xB4 },
+  { t: "IF",      v: 0x8A },
+  { t: "HEX$",    v: 0xF2 },
+  { t: "GOTO",    v: 0x88 },
+  { t: "GOSUB",   v: 0x8C },
+  { t: "FSET",    v: 0xB0 },
+  { t: "FRE",     v: 0xE2 },
+  { t: "FOR",     v: 0x81 },
+  { t: "FONT$",   v: 0xCB },
+  { t: "FN",      v: 0xBC },
+  { t: "FIX",     v: 0xF0 },
+  { t: "EXP",     v: 0xE7 },
+  { t: "EXEC",    v: 0xA8 },
+  { t: "ERROR",   v: 0xBF }, // note: duplicate exists in C; first match wins
+  { t: "ERL",     v: 0xBE },
+  { t: "ERASE",   v: 0xB5 },
+  { t: "EQU",     v: 0xD9 },
+  { t: "END",     v: 0x80 },
+  { t: "ELSE",    v: 0x90, f: FLAG_PREFIX_COLON },
+  { t: "DIR",     v: 0xAE },
+  { t: "DIM",     v: 0x85 },
+  { t: "DELETE",  v: 0xAF },
+  { t: "DEFSTR",  v: 0x93 },
+  { t: "DEFSNG",  v: 0x95 },
+  { t: "DEFINT",  v: 0x94 },
+  { t: "DEFFN",   v: 0x9D },
+  { t: "DEFDBL",  v: 0x96 },
+  { t: "DATE$",   v: 0xC8 },
+  { t: "DATA",    v: 0x83, f: FLAG_TRANSPARENT },
+  { t: "CSRLIN",  v: 0xFB },
+  { t: "CSNG",    v: 0xEE },
+  { t: "CSAVE",   v: 0xB8 },
+  { t: "COS",     v: 0xE8 },
+  { t: "CONT",    v: 0xA0 },
+  { t: "CONSOLE", v: 0xA5 },
+  { t: "COLOR",   v: 0xA7 },
+  { t: "CLS",     v: 0xA6 },
+  { t: "CLOAD",   v: 0xB7 },
+  { t: "CLEAR",   v: 0xA3 },
+  { t: "CIRCLE",  v: 0xA4 },
+  { t: "CINT",    v: 0xED },
+  { t: "CHR$",    v: 0xF6 },
+  { t: "CDBL",    v: 0xEF },
+  { t: "BEEP",    v: 0xB6 },
+  { t: "ATN",     v: 0xEB },
+  { t: "ASC",     v: 0xF5 },
+  { t: "AND",     v: 0xD6 },
+  { t: "ALM$",    v: 0xC7 },
+  { t: "ABS",     v: 0xE1 },
+  { t: ">",       v: 0xDC },
+  { t: "=",       v: 0xDD },
+  { t: "<",       v: 0xDE },
+  { t: "/",       v: 0xD4 },
+  { t: "-",       v: 0xD2 },
+  { t: "+",       v: 0xD1 },
+  { t: "*",       v: 0xD3 },
+  // Apostrophe: special flags (transparent, prefix ':', add REM)
+  { t: "'",       v: 0xFF, f: FLAG_TRANSPARENT | FLAG_PREFIX_COLON | FLAG_REM_BEFORE }
+];
+
+// ======================= Expose globally =======================
+global.X07_UTF8 = X07_UTF8;
+global.X07_ESCAPES = X07_ESCAPES;
+global.X07_TOKENS = X07_TOKENS;
+global.FLAG_TRANSPARENT = FLAG_TRANSPARENT;
+global.FLAG_PREFIX_COLON = FLAG_PREFIX_COLON;
+global.FLAG_REM_BEFORE = FLAG_REM_BEFORE;
+
+})(window);
