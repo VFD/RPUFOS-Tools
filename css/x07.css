@@ -1,0 +1,30 @@
+/* ============================================================
+   File: x07.css
+   Description: 
+   Author: VincentD
+   Created: November 26, 2025
+   Last Updated: November 26, 2025
+   Version: 1.0
+   ============================================================ */
+
+
+.Container {
+  display: flex;
+  gap: 20px;
+}
+
+.Column {
+  flex: 1;
+}
+
+textarea {
+  width: 100%;
+  height: 300px;
+  font-family: monospace;
+  font-size: 1.2em;
+  padding: 1em;
+  resize: vertical;
+}
+
+
+/* ==================== EOF ===================== */
