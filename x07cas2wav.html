@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<!-- Meta information -->
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="VincentD">
+		<!-- Page title -->
+		<title>RPUFOS X07 CAS to WAV</title>
+		<!-- CSS stylesheet -->
+		<link rel="stylesheet" href="css/styles.css">
+		<link rel="stylesheet" href="css/x07.css">
+		<!-- CSS if FOUC -->
+		<!--
+		<link rel="preload" href="styles.css" as="style" onload="this.rel='stylesheet'">
+		<noscript><link rel="stylesheet" href="style.css"></noscript>
+		-->
+		<!-- Favicon (optional) -->
+		<link rel="icon" href="Logos/RPUFOS_Logo.ico" type="image/x-icon">
+		<!-- Scripts -->
+		<!-- <script src="js/x07cas2wav.js" defer></script> -->
+	</head>
+	<!--  -->
+	<body>
+		<!-- Header section -->
+		<header>
+			<div class="header-container">
+				<a href="index.html">
+					<img src="Logos/RPUFOS_Logo-512.png" alt="Logo" class="logo" />
+				</a>
+				<h1>X07 CAS to WAV converter</h1>
+			</div>
+		</header>
+		<hr />
+		<!-- Main content -->
+		<main>
+			<h3>Objective</h3>
+			<p>The goal is to convert CAS programs (in hex file form) into WAV.</p>
+			<h3>How to</h3>
+			<p>Convert CAS is currently in beta test.<br />
+			Load the file, convert, if ok, save it (donwload folder).</p>
+			<hr />
+			<button id="loadBtn">Load</button>
+			<button id="buildBtn">Convert</button>
+			<button id="saveBtn">Save</button>
+			<hr />
+			<!-- Displaying the loaded file name -->
+			<div id="filename">No file loaded</div>
+			<hr />
+			<div class="Container">
+				<div class="Column">
+					<h3>CAS (hexadecimal)</h3>
+					<p>16 bytes per lines.</p>
+					<textarea id="hexInput" placeholder="CAS here..."></textarea>
+				</div>
+				<div class="Column">
+					<h3>Audio (.wav)</h3>
+					<p>Encoded log</p>
+					<textarea id="logOutput" placeholder="Encoding log..." readonly></textarea>
+				</div>
+			</div>
+			<hr />
+<section>
+  <h3>The decrypted CAS binary</h3>
+
+</section>
+
+
+		</main>
+		<hr />
+		<!-- Footer section -->
+		<footer>
+			<img src="Logos/CC-BY-NC-ND-EU.png" alt="CC by NC ND EU" />
+			<p>&copy; 2025 VincentD - RPUFOS Work Tools</p>
+		</footer>
+
+
+
+  <script defer>
+ const sampleRate = 44100;
+const baud = 1200;
+const bitDuration = 1 / baud; // durée d’un bit
+
+function toHexView16(u8) {
+  let out = "";
+  for (let i = 0; i < u8.length; i++) {
+    if (i > 0) out += (i % 16 === 0) ? "\n" : " ";
+    out += u8[i].toString(16).padStart(2, "0");
+  }
+  return out;
+}
+
+function parseHexTextToBytes(hexText) {
+  const cleaned = hexText.toLowerCase().replace(/[^0-9a-f\s]/g, " ").replace(/\s+/g, " ").trim();
+  if (!cleaned) return new Uint8Array([]);
+  const bySpace = cleaned.split(" ").filter(Boolean);
+  let bytes = [];
+  if (bySpace.every(tok => /^[0-9a-f]{2}$/.test(tok))) {
+    bytes = bySpace.map(h => parseInt(h, 16));
+  } else {
+    const compact = cleaned.replace(/ /g, "");
+    if (compact.length % 2 !== 0) throw new Error("Hex length not even");
+    for (let i = 0; i < compact.length; i += 2) {
+      bytes.push(parseInt(compact.slice(i, i + 2), 16));
+    }
+  }
+  return new Uint8Array(bytes);
+}
+
+// Génère les samples pour un bit
+function addBit(bit, samples) {
+  const freq = bit === 0 ? 1200 : 2400;
+  const count = Math.floor(sampleRate * bitDuration);
+  for (let i = 0; i < count; i++) {
+    const t = i / sampleRate;
+    samples.push(Math.sin(2 * Math.PI * freq * t));
+  }
+}
+
+// Génère le WAV complet
+function generateWavFromBytes(bytes) {
+  let samples = [];
+
+  // Lead-in long (2s de '1')
+  for (let i = 0; i < sampleRate * 2; i++) {
+    samples.push(Math.sin(2 * Math.PI * 2400 * (i / sampleRate)));
+  }
+
+  let count = 0;
+  for (const b of bytes) {
+    if (count === 16) {
+      // Lead-in court (0.6s de '1')
+      for (let i = 0; i < sampleRate * 0.6; i++) {
+        samples.push(Math.sin(2 * Math.PI * 2400 * (i / sampleRate)));
+      }
+    }
+    // Start bit
+    addBit(0, samples);
+    // 8 data bits LSB-first
+    for (let i = 0; i < 8; i++) {
+      addBit((b >> i) & 1, samples);
+    }
+    // Stop bits (3 × '1')
+    addBit(1, samples);
+    addBit(1, samples);
+    addBit(1, samples);
+    count++;
+  }
+
+  // Silence final 0.6s
+  for (let i = 0; i < sampleRate * 0.6; i++) {
+    samples.push(0);
+  }
+
+  // Convertir en PCM 16-bit
+  const buffer = new ArrayBuffer(44 + samples.length * 2);
+  const view = new DataView(buffer);
+
+  function writeString(offset, str) {
+    for (let i = 0; i < str.length; i++) view.setUint8(offset+i, str.charCodeAt(i));
+  }
+  writeString(0,"RIFF");
+  view.setUint32(4, 36 + samples.length*2, true);
+  writeString(8,"WAVE");
+  writeString(12,"fmt ");
+  view.setUint32(16,16,true);
+  view.setUint16(20,1,true);
+  view.setUint16(22,1,true);
+  view.setUint32(24,sampleRate,true);
+  view.setUint32(28,sampleRate*2,true);
+  view.setUint16(32,2,true);
+  view.setUint16(34,16,true);
+  writeString(36,"data");
+  view.setUint32(40,samples.length*2,true);
+
+  let offset = 44;
+  for (let s of samples) {
+    const val = Math.max(-1, Math.min(1, s));
+    view.setInt16(offset, val*32767, true);
+    offset += 2;
+  }
+
+  return new Blob([buffer], {type:"audio/wav"});
+}
+
+// Format log
+function formatFramedByte(b) {
+  let bits = [];
+  bits.push("0");
+  for (let i = 0; i < 8; i++) {
+    bits.push(((b >> i) & 1) ? "1" : "0");
+  }
+  bits.push("111");
+  return bits.join(" ");
+}
+function formatFrames(bytes) {
+  let lines = [];
+  lines.push("=== HEADER FRAMES ===");
+  for (let i = 0; i < 16 && i < bytes.length; i++) {
+    lines.push("Byte " + i + ": " + formatFramedByte(bytes[i]));
+  }
+  lines.push("\n=== PROGRAM FRAMES ===");
+  for (let i = 16; i < bytes.length; i++) {
+    lines.push("Byte " + i + ": " + formatFramedByte(bytes[i]));
+  }
+  lines.push("\n=== TAIL / SYNC ===");
+  lines.push("60 × '1' bits (sync)");
+  lines.push("0.6s silence");
+  return lines.join("\n");
+}
+
+// Wiring des boutons
+(function() {
+  const loadBtn   = document.getElementById("loadBtn");
+  const encodeBtn = document.getElementById("encodeBtn");
+  const saveBtn   = document.getElementById("saveBtn");
+  const hexInput  = document.getElementById("hexInput");
+  const logOutput = document.getElementById("logOutput");
+  const filenameEl= document.getElementById("filename");
+
+  let loadedFilename = "";
+
+  function setFilename(name) {
+    loadedFilename = name || "";
+    filenameEl.textContent = loadedFilename ? loadedFilename : "No file loaded";
+  }
+
+  loadBtn.addEventListener("click", () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".cas";
+    input.onchange = e => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      setFilename(file.name);
+      const reader = new FileReader();
+      reader.onload = () => {
+        const u8 = new Uint8Array(reader.result);
+        hexInput.value = toHexView16(u8);
+        logOutput.value = "";
+      };
+      reader.readAsArrayBuffer(file);
+    };
+    input.click();
+  });
+
+  encodeBtn.addEventListener("click", () => {
+    try {
+      const u8 = parseHexTextToBytes(hexInput.value || "");
+      hexInput.value = toHexView16(u8);
+      logOutput.value = formatFrames(u8);
+    } catch (err) {
+      logOutput.value = "Encode error: " + (err.message || err);
+    }
+  });
+
+  saveBtn.addEventListener("click", () => {
+    try {
+      const u8 = parseHexTextToBytes(hexInput.value || "");
+      const wavBlob = generateWavFromBytes(u8);
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(wavBlob);
+      const basename = (loadedFilename.replace(/\.[^/.]+$/, "") || "program");
+      a.download = basename + ".wav";
+      document.body.appendChild(a);
+      a.click();
+      URL.revokeObjectURL(a.href);
+      a.remove();
+    } catch (err) {
+      alert("Save error: " + (err.message || err));
+    }
+  });
+
+  setFilename("");
+})();
+
+  </script>
+
+
+		
+	</body>
+	
+</html>
+<!-- EOF -->

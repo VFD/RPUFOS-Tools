@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<!-- Meta information -->
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="VincentD">
+		<!-- Page title -->
+		<title>RPUFOS X07 BAS to CAS</title>
+		<!-- CSS stylesheet -->
+		<link rel="stylesheet" href="css/styles.css">
+		<link rel="stylesheet" href="css/x07.css">
+		<!-- CSS if FOUC -->
+		<!--
+		<link rel="preload" href="styles.css" as="style" onload="this.rel='stylesheet'">
+		<noscript><link rel="stylesheet" href="style.css"></noscript>
+		-->
+		<!-- Favicon (optional) -->
+		<link rel="icon" href="Logos/RPUFOS_Logo.ico" type="image/x-icon">
+		<!-- Scripts -->
+		<script src="js/x07tokens.js"></script>
+		<script src="js/x07bas2cas.js" defer></script>
+	</head>
+	<!--  -->
+	<body>
+		<!-- Header section -->
+		<header>
+			<div class="header-container">
+				<a href="index.html">
+					<img src="Logos/RPUFOS_Logo-512.png" alt="Logo" class="logo" />
+				</a>
+				<h1>X07 BAS to CAS converter</h1>
+			</div>
+		</header>
+		<hr />
+		<!-- Main content -->
+		<main>
+			<h3>Objective</h3>
+			<p>The goal is to convert BASIC programs (in text file form) into the CAS format, a binary used for emulators. The CAS file can then be converted into WAV format for real machines.</p>
+			<h3>How to</h3>
+			<p>This application converts BASIC code to CAS format and is currently in beta test.<br />
+			Load the file, convert, if ok, save it (donwload folder).</p>
+			<hr />
+			<button id="loadBtn">Load</button>
+			<button id="buildBtn">Convert</button>
+			<button id="saveBtn">Save</button>
+			<hr />
+			<!-- Displaying the loaded file name -->
+			<div id="filename">No file loaded</div>
+			<hr />
+			<div class="Container">
+				<div class="Column">
+					<h3>BASIC (.bas)</h3>
+					<p>You can modify it before convert.</p>
+					<textarea id="txtInput" placeholder="BASIC content..."></textarea>
+				</div>
+				<div class="Column">
+					<h3>CAS (hexadecimal)</h3>
+					<p>16 bytes per lines.</p>
+					<textarea id="hexOutput" placeholder="CAS here..." readonly></textarea>
+				</div>
+			</div>
+			<hr />
+<section>
+  <h3>The decrypted CAS binary</h3>
+  <p>The CAS file structure for Canon X‑07 programs.</p>
+
+  <h4>Leader / Sync header</h4>
+  <p>10 bytes filled with D3h (used as synchronization leader).</p>
+  <pre>d3 d3 d3 d3 d3 d3 d3 d3 d3 d3</pre>
+
+  <h4>Program name</h4>
+  <p>6 ASCII characters (basename of the file), padded with 00h if shorter.</p>
+  <pre>6e 6e 6e 6e 6e 6e</pre>
+
+  <h4>Program body</h4>
+  <p>
+    Each BASIC line is stored as a block:<br />
+    • 2 bytes: pointer to next line (little endian)<br />
+    • 2 bytes: line number (little endian)<br />
+    • Encoded tokens/ASCII for the line content<br />
+    • End of line marker: 00h
+  </p>
+  <pre>pp pp nn nn [tokens...] 00</pre>
+
+  <h4>Line chaining</h4>
+  <p>
+    The first two bytes of each block are the pointer to the next line in memory.<br />
+    This creates a linked list of lines starting at BASIC area address 0553h.
+  </p>
+
+  <h4>End of program marker</h4>
+  <p>
+    After the last line, the pointer is set to 0000h to mark the end of the program.
+  </p>
+  <pre>00 00</pre>
+
+  <h4>Trailer</h4>
+  <p>
+    The CAS file ends with a fixed sequence of 11 zero bytes.<br />
+    This marks the termination of the tape image.
+  </p>
+  <pre>00 00 00 00 00 00 00 00 00 00 00</pre>
+</section>
+
+
+		</main>
+		<hr />
+		<!-- Footer section -->
+		<footer>
+			<img src="Logos/CC-BY-NC-ND-EU.png" alt="CC by NC ND EU" />
+			<p>&copy; 2025 VincentD - RPUFOS Work Tools</p>
+		</footer>
+
+
+<script>
+(function() {
+  // UI elements
+  const loadBtn = document.getElementById("loadBtn");
+  const buildBtn = document.getElementById("buildBtn");
+  const saveBtn  = document.getElementById("saveBtn");
+  const txtInput = document.getElementById("txtInput");
+  const hexOutput = document.getElementById("hexOutput");
+  const filenameEl = document.getElementById("filename");
+
+  // State
+  let loadedFilename = ""; // full filename (e.g., myprog.bas)
+
+  // Update filename display
+  function setFilename(name) {
+    loadedFilename = name || "";
+    filenameEl.textContent = loadedFilename ? loadedFilename : "No file loaded";
+  }
+
+  // Derive basename (without extension)
+  function getBaseName() {
+    if (!loadedFilename) return "program";
+    return loadedFilename.replace(/\.[^/.]+$/, "") || "program";
+  }
+
+  // Load .bas/.txt file
+  loadBtn?.addEventListener("click", () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".bas,.txt";
+    input.onchange = e => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      setFilename(file.name);
+      const reader = new FileReader();
+      reader.onload = () => {
+        // Assure UTF-8 read
+        txtInput.value = reader.result;
+      };
+      reader.readAsText(file, "utf-8");
+    };
+    input.click();
+  });
+
+  // Convert BAS -> CAS (hex view)
+  buildBtn?.addEventListener("click", () => {
+    const basename = getBaseName();
+    const cas = X07_BAS2CAS.buildCAS(txtInput.value || "", basename);
+    hexOutput.value = X07_BAS2CAS.toHexView(cas);
+  });
+
+  // Save CAS file (binary)
+  saveBtn?.addEventListener("click", () => {
+    // If hexOutput is empty, build from current textarea first
+    if (!hexOutput.value.trim()) {
+      const basename = getBaseName();
+      const cas = X07_BAS2CAS.buildCAS(txtInput.value || "", basename);
+      hexOutput.value = X07_BAS2CAS.toHexView(cas);
+    }
+
+    const hex = hexOutput.value.trim();
+    if (!hex) return;
+
+    // Recreate bytes from hex view and save
+    const bytes = hex.split(/\s+/).map(h => parseInt(h, 16));
+    const blob = new Blob([new Uint8Array(bytes)], { type: "application/octet-stream" });
+
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    const basename = getBaseName();
+    a.download = (basename || "program") + ".cas";
+    document.body.appendChild(a);
+    a.click();
+    URL.revokeObjectURL(a.href);
+    a.remove();
+  });
+
+  // Initial filename display
+  setFilename("");
+})();
+</script>
+
+
+
+		
+	</body>
+	
+</html>
+<!-- EOF -->
