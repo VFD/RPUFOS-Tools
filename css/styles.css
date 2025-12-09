@@ -3,7 +3,7 @@
    Description: Global CSS for all html
    Author: VincentD
    Created: November 26, 2025
-   Last Updated: November 26, 2025
+   Last Updated: December 09, 2025
    Version: 1.0
    ============================================================ */
 
@@ -55,12 +55,13 @@ header {
 }
 
 .header-container h1 {
-  font-size: 1.2em;
+  font-size: 2em;
   margin: 0;
   position: absolute;     /* independent centering */
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
+  font-weight: bold;
 }
 
 /* Footer */
@@ -163,5 +164,44 @@ textarea {
   text-align: center;
   margin-bottom: 8px;
 }
+
+/* -------------------------------------------------- */
+/* collapsible zone */
+/* -------------------------------------------------- */
+.collapsible {
+  cursor: pointer;
+  position: relative;
+  padding-left: 1.5em;
+}
+
+.collapsible::before {
+  content: "+";
+  position: absolute;
+  left: 0;
+}
+
+.collapsible.is-open::before {
+  content: "−";
+}
+
+/* Masqué par défaut */
+.collapsible + .collapsible-content {
+  display: none;
+}
+
+/* Affiché quand ouvert */
+.collapsible.is-open + .collapsible-content {
+  display: block;
+}
+
+
+
+
+
+
+
+
+
+
 
 /* ==================== EOF ===================== */
