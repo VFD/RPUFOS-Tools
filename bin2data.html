@@ -18,6 +18,7 @@
 		<!-- Favicon (optional) -->
 		<link rel="icon" href="Logos/RPUFOS_Logo.ico" type="image/x-icon">
 		<!-- Scripts éventuels -->
+		<script src="js/general.js" defer></script>
 		<script src="js/bin2data.js" defer></script>
 	</head>
 	<body>
@@ -40,7 +41,7 @@
 			<!-- Main buttons section -->
 			<div class="buttons">
 				<button id="loadBtn">Load</button>
-				<button id="encodeBtn">Encode</button>
+				<button id="buildBtn">Encode</button>
 				<button id="saveBtn">Save</button>
 			</div>
 			<hr />
@@ -50,23 +51,48 @@
 			<!-- Data encoding options -->
 			<fieldset class="options-extra">
 				<legend>Encoding Options</legend>
-				<label><input type="radio" name="encodingMode" value="comma" checked>16-byte hex block (comma-separated)</label>
-				<br />
-				<label><input type="radio" name="encodingMode" value="concat">16-byte hex block (concatenated)</label>
+
+<label for="encodingMode">Block size & mode:</label>
+	<select id="encodingMode">
+		<option value="16-concat" selected>16-byte hex block (concatenated)</option>
+		<option value="16-comma">16-byte hex block (comma-separated)</option>
+		<option value="32-concat">32-byte hex block (concatenated)</option>
+		<option value="32-comma">32-byte hex block (comma-separated)</option>
+	</select>
 				<hr />
 				<label class="form-label">Start line:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="number" id="startLine" value="10"></label>
 				<br />
 				<label class="form-label">Line increment:&nbsp;<input type="number" id="lineIncrement" value="10"></label>
 			</fieldset>
-			<!-- Controls for adjusting text size -->
-			<br />
-			<div class="text-size-controls">
-				<button id="increaseText">A+</button>
-				<button id="decreaseText">A-</button>
-			</div>
-			<hr />
-			<!-- Text area showing the generated BASIC source code -->
-			<textarea id="outputArea" readonly></textarea>
+			
+  <!-- Two textareas side by side -->
+  <div style="display:flex; gap: 12px; align-items:flex-start; justify-content:center;">
+    <!-- Left textarea -->
+    <div style="flex:1;">
+      <fieldset>
+        <legend>BIN (hex view)</legend>
+        <div class="text-size-controls">
+          <button id="leftFontInc">A+</button>
+          <button id="leftFontDec">A-</button>
+        </div>
+        <textarea id="leftArea" readonly>Binary view here...</textarea>
+      </fieldset>
+    </div>
+    <!-- Right textarea -->
+    <div style="flex:1;">
+      <fieldset>
+        <legend>Basic DATA</legend>
+        <div class="text-size-controls">
+          <button id="rightFontInc">A+</button>
+          <button id="rightFontDec">A-</button>
+        </div>
+        <textarea id="rightArea" readonly>BASIC DATA here...</textarea>
+      </fieldset>
+    </div>
+  </div>
+
+			
+			
 		</main>
 		<!-- -->
 		<hr />

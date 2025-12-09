@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+	<!-- TO DO: correct indentation and complete data info - better html to do -->
 	<head>
 		<!-- Meta information -->
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="description" content="">
+		<meta name="description" content="Convert a CAS file Canon X07 emulator to a BASIC text file.">
 		<meta name="author" content="VincentD">
 		<!-- Page title -->
 		<title>RPUFOS X07 CAS to BAS</title>
@@ -19,7 +20,8 @@
 		<!-- Favicon (optional) -->
 		<link rel="icon" href="Logos/RPUFOS_Logo.ico" type="image/x-icon">
 		<!-- Scripts -->
-		<script src="js/x07tokens.js"></script>
+		<script src="js/general.js" defer></script>
+		<script src="js/x07tokens.js" defer></script>
 		<script src="js/x07cas2bas.js" defer></script>
 	</head>
 	<!--  -->
@@ -30,14 +32,14 @@
 				<a href="index.html">
 					<img src="Logos/RPUFOS_Logo-512.png" alt="Logo" class="logo" />
 				</a>
-				<h1>X07 CAS to BAS converter</h1>
+				<h1>CAS to BAS converter<br />(Canon X-07)</h1>
 			</div>
 		</header>
 		<hr />
 		<!-- Main content -->
 		<main>
 			<h3>Objective</h3>
-			<p>The goal is to convert CAS programs (in hex file form) into BASIC.</p>
+			<p>The goal is to convert Canon X07 CAS file (hex file) into BASIC texte program (UTF-8).</p>
 			<h3>How to</h3>
 			<p>Convert CAS is currently in beta test.<br />
 			Load the file, convert, if ok, save it (donwload folder).</p>
@@ -46,171 +48,84 @@
 			<button id="buildBtn">Convert</button>
 			<button id="saveBtn">Save</button>
 			<hr />
-			<!-- Displaying the loaded file name -->
-			<div id="filename">No file loaded</div>
-			<hr />
-			<div class="Container">
-				<div class="Column">
-					<h3>CAS (hexadecimal)</h3>
-					<p>16 bytes per lines.</p>
-					<textarea id="hexInput" placeholder="CAS here..."></textarea>
+
+			<!-- File name display -->
+			<span id="filename">No file loaded...</span>			
+			<hr />			
+			<!-- Two textareas side by side -->
+			<div style="display:flex; gap: 12px; align-items:flex-start; justify-content:center;">
+				<!-- Left textarea -->
+				<div style="flex:1;">
+					<fieldset>
+					<legend>CAS (hex view)</legend>
+					<div class="text-size-controls">
+						<button id="leftFontInc">A+</button>
+						<button id="leftFontDec">A-</button>
+					</div>
+					<textarea id="leftArea" readonly>CAS here...</textarea>
+					</fieldset>
 				</div>
-				<div class="Column">
-					<h3>BASIC (.bas)</h3>
-					<p>Decoded.</p>
-					<textarea id="hexOutput" placeholder="BASIC content..." readonly></textarea>
+				<!-- Right textarea -->
+				<div style="flex:1;">
+				<fieldset>
+					<legend>Basic</legend>
+					<div class="text-size-controls">
+						<button id="rightFontInc">A+</button>
+						<button id="rightFontDec">A-</button>
+					</div>
+					<textarea id="rightArea" readonly>BASIC content...</textarea>
+					</fieldset>
 				</div>
 			</div>
-			<hr />
-<section>
-  <h3>The decrypted CAS binary</h3>
-  <p>The CAS file structure for Canon X‑07 programs.</p>
-
-  <h4>Leader / Sync header</h4>
-  <p>10 bytes filled with D3h (used as synchronization leader).</p>
-  <pre>d3 d3 d3 d3 d3 d3 d3 d3 d3 d3</pre>
-
-  <h4>Program name</h4>
-  <p>6 ASCII characters (basename of the file), padded with 00h if shorter.</p>
-  <pre>6e 6e 6e 6e 6e 6e</pre>
-
-  <h4>Program body</h4>
-  <p>
-    Each BASIC line is stored as a block:<br />
-    • 2 bytes: pointer to next line (little endian)<br />
-    • 2 bytes: line number (little endian)<br />
-    • Encoded tokens/ASCII for the line content<br />
-    • End of line marker: 00h
-  </p>
-  <pre>pp pp nn nn [tokens...] 00</pre>
-
-  <h4>Line chaining</h4>
-  <p>
-    The first two bytes of each block are the pointer to the next line in memory.<br />
-    This creates a linked list of lines starting at BASIC area address 0553h.
-  </p>
-
-  <h4>End of program marker</h4>
-  <p>
-    After the last line, the pointer is set to 0000h to mark the end of the program.
-  </p>
-  <pre>00 00</pre>
-
-  <h4>Trailer</h4>
-  <p>
-    The CAS file ends with a fixed sequence of 11 zero bytes.<br />
-    This marks the termination of the tape image.
-  </p>
-  <pre>00 00 00 00 00 00 00 00 00 00 00</pre>
-</section>
-
-
-		</main>
+			<!--  -->
+			<section>
+				<h3 class="collapsible">TO DO</h3>
+				<div class="collapsible-content">
+					<p>Improve the tokens (X07Tokens.js)</p>
+				</div>
+				<h3 class="collapsible">The decrypted CAS binary</h3>
+				<div class="collapsible-content">
+					<p>The CAS file structure for Canon X‑07 programs.</p>
+					<h4>Leader / Sync header</h4>
+					<p>10 bytes filled with D3h (used as synchronization leader).</p>
+					<pre>d3 d3 d3 d3 d3 d3 d3 d3 d3 d3</pre>
+					<h4>Program name</h4>
+					<p>6 ASCII characters (basename of the file), padded with 00h if shorter.</p>
+					<pre>6e 6e 6e 6e 6e 6e</pre>
+					<h4>Program body</h4>
+					<p>
+					Each BASIC line is stored as a block:<br />
+					• 2 bytes: pointer to next line (little endian)<br />
+					• 2 bytes: line number (little endian)<br />
+					• Encoded tokens/ASCII for the line content<br />
+					• End of line marker: 00h
+					</p>
+					<pre>pp pp nn nn [tokens...] 00</pre>
+					<h4>Line chaining</h4>
+					<p>
+					The first two bytes of each block are the pointer to the next line in memory.<br />
+					This creates a linked list of lines starting at BASIC area address 0553h.
+					</p>
+					<h4>End of program marker</h4>
+					<p>
+					After the last line, the pointer is set to 0000h to mark the end of the program.
+					</p>
+					<pre>00 00</pre>
+					<h4>Trailer</h4>
+					<p>
+					The CAS file ends with a fixed sequence of 11 zero bytes.<br />
+					This marks the termination of the tape image.
+					</p>
+					<pre>00 00 00 00 00 00 00 00 00 00 00</pre>
+				</div>
+			</section>
+		<!--  -->		</main>
 		<hr />
 		<!-- Footer section -->
 		<footer>
 			<img src="Logos/CC-BY-NC-ND-EU.png" alt="CC by NC ND EU" />
 			<p>&copy; 2025 VincentD - RPUFOS Work Tools</p>
 		</footer>
-
-
-
-
-<script>
-(function() {
-  const loadBtn   = document.getElementById("loadBtn");
-  const buildBtn  = document.getElementById("buildBtn"); // Convert
-  const saveBtn   = document.getElementById("saveBtn");
-  const hexInput  = document.getElementById("hexInput");   // CAS hex
-  const txtOutput = document.getElementById("hexOutput");  // BASIC
-  const filenameEl= document.getElementById("filename");
-
-  let loadedFilename = "";
-
-  function setFilename(name) {
-    loadedFilename = name || "";
-    filenameEl.textContent = loadedFilename ? loadedFilename : "No file loaded";
-  }
-
-  function toHexView16(u8) {
-    let out = "";
-    for (let i = 0; i < u8.length; i++) {
-      if (i > 0) out += (i % 16 === 0) ? "\n" : " ";
-      out += u8[i].toString(16).padStart(2, "0");
-    }
-    return out;
-  }
-
-  function parseHexTextToBytes(hexText) {
-    const cleaned = hexText.toLowerCase().replace(/[^0-9a-f\s]/g, " ").replace(/\s+/g, " ").trim();
-    if (!cleaned) return new Uint8Array([]);
-    const bySpace = cleaned.split(" ").filter(Boolean);
-    let bytes = [];
-    if (bySpace.every(tok => /^[0-9a-f]{2}$/.test(tok))) {
-      bytes = bySpace.map(h => parseInt(h, 16));
-    } else {
-      const compact = cleaned.replace(/ /g, "");
-      if (compact.length % 2 !== 0) throw new Error("Hex length not even");
-      for (let i = 0; i < compact.length; i += 2) {
-        bytes.push(parseInt(compact.slice(i, i + 2), 16));
-      }
-    }
-    return new Uint8Array(bytes);
-  }
-
-  // ----- Load CAS (binary) -----
-  loadBtn.addEventListener("click", () => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = ".cas";
-    input.onchange = e => {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
-      setFilename(file.name);
-      const reader = new FileReader();
-      reader.onload = () => {
-        const u8 = new Uint8Array(reader.result);
-        // Affiche en hex seulement
-        hexInput.value = toHexView16(u8);
-        // Ne pas lancer la conversion ici
-        txtOutput.value = ""; 
-      };
-      reader.readAsArrayBuffer(file);
-    };
-    input.click();
-  });
-
-  // ----- Convert (hex textarea -> BASIC) -----
-  buildBtn.addEventListener("click", () => {
-    try {
-      const u8 = parseHexTextToBytes(hexInput.value || "");
-      hexInput.value = toHexView16(u8); // reformate
-      const basText = X07_CAS2BAS.parseCAS(u8);
-      txtOutput.value = basText;
-    } catch (err) {
-      txtOutput.value = "Convert error: " + (err.message || err);
-    }
-  });
-
-  // ----- Save BASIC -----
-  saveBtn.addEventListener("click", () => {
-    const text = (txtOutput.value || "").trim();
-    if (!text) return;
-    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    const basename = (loadedFilename.replace(/\.[^/.]+$/, "") || "program");
-    a.download = basename + ".bas";
-    document.body.appendChild(a);
-    a.click();
-    URL.revokeObjectURL(a.href);
-    a.remove();
-  });
-
-  setFilename("");
-})();
-</script>
-
 
 
 		

@@ -23,8 +23,9 @@
 		<!-- Favicon (optional) -->
 		<link rel="icon" href="Logos/RPUFOS_Logo.ico" type="image/x-icon">
 
-		<!-- Scripts éventuels -->
+		<script src="js/general.js" defer></script>
 		<script src="js/bin2phc.js" defer></script>
+
 	</head>
 
 	<body>
@@ -46,9 +47,9 @@
 		<main>
 			<!-- Buttons -->
 			<div class="buttons">
-				<button id="loadBtn">Load BIN</button>
+				<button id="loadBtn">Load</button>
 				<button id="convertBtn">Convert</button>
-				<button id="saveBtn">Save PHC</button>
+				<button id="saveBtn">Save</button>
 			</div>
 			<!-- Filename display -->
 			<div id="filename">No file loaded</div>
@@ -62,27 +63,27 @@
 			<h3>Hexa view of binary and phc file</h3>
 			<!-- Two textareas side by side -->
 			<div style="display:flex; gap: 12px; align-items:flex-start; justify-content:center;">
-				<!-- Left textarea: BIN hex -->
+				<!-- Left textarea -->
 				<div style="flex:1;">
-				<fieldset>
+					<fieldset>
 					<legend>BIN (hex view)</legend>
 					<div class="text-size-controls">
-						<button id="binFontInc">A+</button>
-						<button id="binFontDec">A-</button>
+						<button id="leftFontInc">A+</button>
+						<button id="leftFontDec">A-</button>
 					</div>
-					<textarea id="binHex" readonly></textarea>
-				</fieldset>
+					<textarea id="leftArea" readonly></textarea>
+					</fieldset>
 				</div>
-				<!-- Right textarea: PHC hex -->
+				<!-- Right textarea -->
 				<div style="flex:1;">
 					<fieldset>
 					<legend>PHC (hex view)</legend>
 					<div class="text-size-controls">
-						<button id="phcFontInc">A+</button>
-						<button id="phcFontDec">A-</button>
+						<button id="rightFontInc">A+</button>
+						<button id="rightFontDec">A-</button>
 					</div>
-					<textarea id="phcHex" readonly></textarea>
-				</fieldset>
+					<textarea id="rightArea" readonly></textarea>
+					</fieldset>
 				</div>
 			</div>
 			<hr />
@@ -105,7 +106,10 @@
 			<img src="Logos/CC-BY-NC-ND-EU.png" alt="CC by NC ND EU" />
 			<p>&copy; 2025 VincentD - RPUFOS Work Tools</p>
 		</footer>
-		
+
+
+
+
 	</body>
 	
 </html>

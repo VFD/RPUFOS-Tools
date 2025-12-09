@@ -4,7 +4,7 @@
 		<!-- Meta information -->
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="description" content="">
+		<meta name="description" content="Convert a Basic file for Sanyo PC-25 emulator.">
 		<meta name="author" content="VincentD">
 		<!-- Page title -->
 		<title>RPUFOS BAS to PHC converter</title>
@@ -19,6 +19,7 @@
 		<!-- Favicon (optional) -->
 		<link rel="icon" href="Logos/RPUFOS_Logo.ico" type="image/x-icon">
 		<!-- Scripts -->
+		<script src="js/general.js" defer></script>
 		<script src="js/bas2phc.js" defer></script>
 	</head>
 	<!--  -->
@@ -45,52 +46,77 @@
 			<button id="buildBtn">Convert</button>
 			<button id="saveBtn">Save</button>
 			<hr />
-			<div class="phcContainer">
-				<div class="phcColumn">
-					<h3>BASIC (.bas)</h3>
-					<p>You can modify it before convert.</p>
-					<textarea id="txtInput" placeholder="BASIC content..."></textarea>
+			<!-- File name display -->
+			<span id="filename">No file loaded...</span>			
+			<hr />			
+			<!-- Two textareas side by side -->
+			<div style="display:flex; gap: 12px; align-items:flex-start; justify-content:center;">
+				<!-- Left textarea -->
+				<div style="flex:1;">
+					<fieldset>
+					<legend>Basic</legend>
+					<div class="text-size-controls">
+						<button id="leftFontInc">A+</button>
+						<button id="leftFontDec">A-</button>
+					</div>
+					<textarea id="leftArea" readonly>BASIC content...</textarea>
+					</fieldset>
 				</div>
-				<div class="phcColumn">
-					<h3>PHC (hexadecimal)</h3>
-					<p>16 bytes per lines.</p>
-					<textarea id="hexOutput" placeholder="PHC here..." readonly></textarea>
+				<!-- Right textarea -->
+				<div style="flex:1;">
+				<fieldset>
+					<legend>PHC (hex view)</legend>
+					<div class="text-size-controls">
+						<button id="rightFontInc">A+</button>
+						<button id="rightFontDec">A-</button>
+					</div>
+					<textarea id="rightArea" readonly>PHC here...</textarea>
+					</fieldset>
 				</div>
-			</div>
+			</div>			
+			<!-- -->
 			<hr />
 			<section>
-				<h3>The decrypted PHC binary</h3>
-				<p>The PHC file structure.</p>
-				<h4>Sync header</h4>
-				<p>10 bytes of value A5h</p>
-				<pre>a5 a5 a5 a5 a5 a5 a5 a5 a5 a5</pre>
-				<h4>Program name:</h4>
-				<p>6 ASCII characters (padded with 00h if shorter).</p>
-				<pre>nn nn nn nn nn nn</pre>
-				<h4>Program body</h4>
-				<p>Repeated blocks of BASIC code encoded in tokens/ASCII.<br />
-				Each line ends with 00h.<br />
-				Continue until no more lines.</p>
-				<pre>nn nn nn nn nn 00</pre>
-				<h4>End of program marker</h4>
-				<p>This includ the end of the last line.</p>
-				<pre>00 00 00</pre>
-				<h4>Line index table (stored in reverse order)</h4>
-				<p>Each entry is 4 bytes:
-					<ul>
-						<li>AL, AH : memory address of the line (little endian)</li>
-						<li>NL, NH : line number (little endian)</li>
-					</ul>
-				Repeat until no more entries.<br />
-				The first four bytes are the last line, the last four bytes are the first line.</p>
-				<pre> al ah nl nh ...</pre>				
-				<h4>Trailer</h4>
-				<pre>00h FFh FFh FFh FFh</pre>
-				<p>followed by padding with 00h bytes (18).</p>
-				<pre>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</pre>
-				<p>Fixed tail section to mark the end of the file.</p>
+				<!-- -->
+				<h3 class="collapsible">TO DO</h3>
+				<div class="collapsible-content">
+					<p>Improve comments and indent in files.</p>
+				</div>
+				<!-- -->
+				<h3 class="collapsible">The decrypted PHC binary</h3>
+				<div class="collapsible-content">
+					<p>Description of the PHC file structure.</p>
+					<h4>Sync header</h4>
+					<p>10 bytes of value A5h</p>
+					<pre>a5 a5 a5 a5 a5 a5 a5 a5 a5 a5</pre>
+					<h4>Program name:</h4>
+					<p>6 ASCII characters (padded with 00h if shorter).</p>
+					<pre>nn nn nn nn nn nn</pre>
+					<h4>Program body</h4>
+					<p>Repeated blocks of BASIC code encoded in tokens/ASCII.<br />
+					Each line ends with 00h.<br />
+					Continue until no more lines.</p>
+					<pre>nn nn nn nn nn 00</pre>
+					<h4>End of program marker</h4>
+					<p>This includ the end of the last line.</p>
+					<pre>00 00 00</pre>
+					<h4>Line index table (stored in reverse order)</h4>
+					<p>Each entry is 4 bytes:
+						<ul>
+							<li>AL, AH : memory address of the line (little endian)</li>
+							<li>NL, NH : line number (little endian)</li>
+						</ul>
+					Repeat until no more entries.<br />
+					The first four bytes are the last line, the last four bytes are the first line.</p>
+					<pre> al ah nl nh ...</pre>				
+					<h4>Trailer</h4>
+					<pre>00h FFh FFh FFh FFh</pre>
+					<p>followed by padding with 00h bytes (18).</p>
+					<pre>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</pre>
+					<p>Fixed tail section to mark the end of the file.</p>
+				</div>
 			</section>
-
+		<!-- -->
 		</main>
 		<hr />
 		<!-- Footer section -->
@@ -98,8 +124,6 @@
 			<img src="Logos/CC-BY-NC-ND-EU.png" alt="CC by NC ND EU" />
 			<p>&copy; 2025 VincentD - RPUFOS Work Tools</p>
 		</footer>
-		
 	</body>
-	
 </html>
 <!-- EOF -->
