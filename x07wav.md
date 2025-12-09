@@ -5,17 +5,16 @@
 
 Le Format de Sauvegarde du Canon X-07
 
-    Période de 1/1200 secondes par bit
-    Un bit 0 : 1200 Hz
-    Un bit 1 : 2400 Hz
-    Signal "carré" de période 1/1200 sec
+- Période de 1/1200 secondes par bit
+- Un bit 0 : 1200 Hz
+- Un bit 1 : 2400 Hz
+- Signal "carré" de période 1/1200 sec
 
 Chaque octet est transmis dans une trame de 12 bits (et non pas de 11 comme le dit la doc !) de la façon suivante :
 
-
-|0 	|1 	|1 	|0 	|0 	|1 	|0 	|1 	|1 	|1 	|1 	|1|
+|0   |1   |1   |0   |0   |1   |0   |1   |1   |1   |1   |1   |
 |----|----|----|----|----|----|----|----|----|----|----|----|
-|bit de Start| 	octet inversé 	|bits de Fin |  |  |
+| bit de Start| octet inversé | | | | | | | |bits de Fin |  |  |
 
         - 1 bit 0
         - 8 bits de l'octet en commençant par le bit de poids faible.
@@ -45,5 +44,6 @@ Les octets représentent le programme tel qu'il est représenté dans la mémoir
 Le signal du Canon commence par la partie basse puis par la partie haute.
 
 Il est possible avec le magnétocassette officiel Canon X-730 de changer la phase du signal via un inverseur sur le coté de l'appareil. Cela a pour effet d'inverser ce signal. Le canon accepte indifféremment l'un ou l'autre.
+
 
 
