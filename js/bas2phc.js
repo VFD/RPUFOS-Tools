@@ -16,6 +16,8 @@
  * ------------------------------------------------------------
  */
 
+// TO DO: indent, correct filename bug.
+
 /*
   PHC file structure
 
@@ -72,8 +74,8 @@ let filename = "BAS001";
 // Match keywords with index 0x80....
 // --------------------------------------------------
 function keywordToByte(wordUpper) {
-  const index = keyWords.findIndex(k => k === wordUpper);
-  return index >= 0 ? (0x80 + index) : null;
+	const index = keyWords.findIndex(k => k === wordUpper);
+	return index >= 0 ? (0x80 + index) : null;
 }
 
 // --------------------------------------------------
@@ -129,7 +131,7 @@ function parseLine(txtLine) {
 }
 
 // --------------------------------------------------
-//
+// Convert to PHC
 // --------------------------------------------------
 function convertToPHC(txtContent) {
   const linesRaw = txtContent.split(/\r?\n/).filter(l => l.trim().length > 0);
@@ -138,12 +140,10 @@ function convertToPHC(txtContent) {
     const p = parseLine(l);
     if (p) parsed.push(p);
   }
-
+  //
   const phc = [];
-
   // Sync A5
   for (let i = 0; i < 10; i++) phc.push(0xA5);
-
   // File name: 6 bytes, padding with 0x00
   // Remove the file extension from the filename.
   // Example: "program.bas" → "program"
@@ -181,7 +181,6 @@ function convertToPHC(txtContent) {
     addrs.push(addr);
     addr += b.length;
   }
-
   // Reverse Table
   for (let i = blocks.length - 1; i >= 0; i--) {
     const a = addrs[i];
@@ -189,74 +188,63 @@ function convertToPHC(txtContent) {
     phc.push(a & 0xFF, (a >> 8) & 0xFF); // adresse LE
     phc.push(n & 0xFF, (n >> 8) & 0xFF); // numéro LE
   }
-
   // Trailer to end the phc
   phc.push(0x00, 0xFF, 0xFF, 0xFF, 0xFF);
   for (let i = 0; i < 18; i++) phc.push(0x00);
-
+//
   return phc;
 }
 
 // --------------------------------------------------
-/**
- * Convert a byte array into a hexadecimal string.
- * Each byte is printed as two hex digits.
- * Bytes are separated by spaces, and a newline is inserted every 16 bytes.
- * Example: [0x00, 0x01, ...] → "00 01 ...\n..."
- */
+// Load .bas/.txt file
 // --------------------------------------------------
-function toHexString(byteArray) {
-  return byteArray
-    .map((b, i) => {
-      const hex = b.toString(16).padStart(2, '0');
-      // Add a newline before every 16th byte except the first
-      return (i > 0 && i % 16 === 0 ? '\n' : '') + hex;
-    })
-    .join(' ');
-}
-
-// --------------------------------------------------
-// Button Load
-// --------------------------------------------------
-document.getElementById("loadBtn").addEventListener("click", () => {
-  const input = document.createElement("input");
-  input.type = "file";
-  input.accept = ".bas,.txt";
-  input.onchange = e => {
-    const file = e.target.files[0];
-    filename = file.name.replace(/\.[^/.]+$/, "");
-    const reader = new FileReader();
-    reader.onload = () => {
-      document.getElementById("txtInput").value = reader.result;
-    };
-    reader.readAsText(file);
-  };
-  input.click();
+loadBtn?.addEventListener("click", () => {
+	const input = document.createElement("input");
+	input.type = "file";
+	input.accept = ".bas,.txt";
+	input.onchange = e => {
+		const file = e.target.files && e.target.files[0];
+		if (!file) return;
+		setFilename(file.name);
+		const reader = new FileReader();
+		reader.onload = () => {
+			// UTF-8 read
+			leftArea.value = reader.result;
+		};
+		reader.readAsText(file, "utf-8");
+	};
+	input.click();
 });
 
 // --------------------------------------------------
 // Button Convert
 // --------------------------------------------------
+
 document.getElementById("buildBtn").addEventListener("click", () => {
-  const txt = document.getElementById("txtInput").value;
-  // convert
-  const phc = convertToPHC(txt);
-  // to show in hex format
-  document.getElementById("hexOutput").value = toHexString(phc);
+	const txt = document.getElementById("leftArea").value;
+	// convert
+	const phc = convertToPHC(txt);
+	// to show in hex format
+	document.getElementById("rightArea").value = toHexString(phc);
 });
+
+
+
 
 // --------------------------------------------------
 // Button Save
 // --------------------------------------------------
 document.getElementById("saveBtn").addEventListener("click", () => {
-  const hex = document.getElementById("hexOutput").value.trim();
-  if (!hex) return;
-  const bytes = hex.split(/\s+/).map(h => parseInt(h, 16));
-  const blob = new Blob([new Uint8Array(bytes)], { type: "application/octet-stream" });
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = filename.replace(/\.[^/.]+$/, "") + ".phc";
-  link.click();
+	const hex = document.getElementById("rightArea").value.trim();
+	if (!hex) return;
+	//
+	const bytes = hex.split(/\s+/).map(h => parseInt(h, 16));
+	const blob = new Blob([new Uint8Array(bytes)], { type: "application/octet-stream" });
+	const link = document.createElement("a");
+	//
+	link.href = URL.createObjectURL(blob);
+	link.download = filename.replace(/\.[^/.]+$/, "") + ".phc";
+	link.click();
 });
 
 

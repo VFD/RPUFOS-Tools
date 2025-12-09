@@ -5,8 +5,6 @@
  * Version const + IIFE : encapsulé mais exposé dans window
  */
 
-(function(global) {
-
 // ======================= UTF‑8 Map =======================
 const X07_UTF8 = {
   "¥": 0x5C, "¿": 0x7F, "♠": 0x80, "♥": 0x81, "♣": 0x82, "♦": 0x83,
@@ -175,12 +173,5 @@ const X07_TOKENS = [
   { t: "'",       v: 0xFF, f: FLAG_TRANSPARENT | FLAG_PREFIX_COLON | FLAG_REM_BEFORE }
 ];
 
-// ======================= Expose globally =======================
-global.X07_UTF8 = X07_UTF8;
-global.X07_ESCAPES = X07_ESCAPES;
-global.X07_TOKENS = X07_TOKENS;
-global.FLAG_TRANSPARENT = FLAG_TRANSPARENT;
-global.FLAG_PREFIX_COLON = FLAG_PREFIX_COLON;
-global.FLAG_REM_BEFORE = FLAG_REM_BEFORE;
 
-})(window);
+// -------------------- EOF --------------------
