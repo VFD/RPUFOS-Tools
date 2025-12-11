@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="fr">
+<html lang="en">
+	<!--  -->
+	<head>
+		<!-- Meta information -->
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="VincentD">
+		<!-- Page title -->
+		<title>RPUFOS X07 CAS to BAS</title>
+		<!-- CSS stylesheet -->
+		<link rel="stylesheet" href="css/styles.css">
+		<!-- CSS if FOUC -->
+		<!--
+		<link rel="preload" href="styles.css" as="style" onload="this.rel='stylesheet'">
+		<noscript><link rel="stylesheet" href="style.css"></noscript>
+		-->
+		<!-- Favicon (optional) -->
+		<link rel="icon" href="Logos/RPUFOS_Logo.ico" type="image/x-icon">
+		<!-- Scripts -->
+		<script src="js/general.js" defer></script>
+		<!-- <script src="js/script.js" defer></script> -->
+	</head>
+	<!--  -->
+	<body>
+		<!-- Header section -->
+		<header>
+			<div class="header-container">
+				<a href="index.html">
+					<img src="Logos/RPUFOS_Logo-512.png" alt="Logo" class="logo" />
+				</a>
+				<h1>CAS to BAS converter<br />(Canon X-07)</h1>
+			</div>
+		</header>
+		<hr />
+		<!-- Main content -->
+		<main>
+			<h3>Objective</h3>
+			<p>The goal is to convert Canon X07 CAS file (hex file) into BASIC texte program (UTF-8).</p>
+			<h3>Problems</h3>
+			<p>A lot....</p>
+			<h3>How to</h3>
+			<p>Convert CAS is currently in beta test.<br />
+			Load the file, convert, if ok, save it (donwload folder).</p>
+			<hr />
+			<input type="file" id="fileInput" accept=".cas" />
+			<hr />
+			<button id="resetBtn" onclick="resetAll()">RESET</button>
+			<button id="loadBtn" onclick="loadCasFile()">Load</button>
+			<button id="buildBtn" onclick="decodeCas()" disabled>Convert</button>
+			<button id="saveBtn" onclick="saveBasicFile()" disabled>Save</button>
+			<hr />
+
+			<!-- File name display -->
+			<span id="filename">No file loaded...</span>			
+			<hr />			
+			<!-- Two textareas side by side -->
+			<div style="display:flex; gap: 12px; align-items:flex-start; justify-content:center;">
+				<!-- Left textarea -->
+				<div style="flex:1;">
+					<fieldset>
+					<legend>CAS (hex view)</legend>
+					<div class="text-size-controls">
+						<button id="leftFontInc">A+</button>
+						<button id="leftFontDec">A-</button>
+					</div>
+					<textarea id="leftArea" readonly>CAS here...</textarea>
+					</fieldset>
+				</div>
+				<!-- Right textarea -->
+				<div style="flex:1;">
+				<fieldset>
+					<legend>Basic</legend>
+					<div class="text-size-controls">
+						<button id="rightFontInc">A+</button>
+						<button id="rightFontDec">A-</button>
+					</div>
+					<textarea id="rightArea" readonly>BASIC content...</textarea>
+					<!-- <textarea id="rightArea" readonly>BASIC content...</textarea> -->
+					</fieldset>
+				</div>
+			</div>
+			<!--  -->
+			<hr />
+			<h3>Log</h3>
+            <textarea id="logOutput" rows="15" placeholder="Logs ..." readonly></textarea>
+			<hr />
+			
+
+		<!--  -->
+		</main>
+		<hr />
+		<!-- Footer section -->
+		<footer>
+			<img src="Logos/CC-BY-NC-ND-EU.png" alt="CC by NC ND EU" />
+			<p>&copy; 2025 VincentD - RPUFOS Work Tools</p>
+		</footer>
+
+
+    <script>
+        // Variables globales
+        let currentFilename = '';
+        let binaryData = null;
+        let decodedBasic = '';
+        
+        // Table inverse des tokens BASIC (corrigée selon le code C original)
+        const TOKEN_TABLE = {
+            0x80: 'END',
+            0x81: 'FOR',
+            0x82: 'NEXT',
+            0x83: 'DATA',
+            0x84: 'INPUT',
+            0x85: 'DIM',
+            0x86: 'READ',
+            0x87: 'LET',
+            0x88: 'GOTO',
+            0x89: 'RUN',
+            0x8A: 'IF',
+            0x8B: 'RESTORE',
+            0x8C: 'GOSUB',
+            0x8D: 'RETURN',
+            0x8E: 'REM',
+            0x8F: 'STOP',
+            0x90: 'ELSE',
+            0x91: 'TR',
+            0x92: 'MOTOR',
+            0x93: 'DEFSTR',
+            0x94: 'DEFINT',
+            0x95: 'DEFSNG',
+            0x96: 'DEFDBL',
+            0x97: 'LINE',
+            0x98: 'ERROR',
+            0x99: 'RESUME',
+            0x9A: 'OUT',
+            0x9B: 'ON',
+            0x9C: 'LPRINT',
+            0x9D: 'DEFFN',
+            0x9E: 'POKE',
+            0x9F: 'PRINT',
+            0xA0: 'CONT',
+            0xA1: 'LIST',
+            0xA2: 'LLIST',
+            0xA3: 'CLEAR',
+            0xA4: 'CIRCLE',
+            0xA5: 'CONSOLE',
+            0xA6: 'CLS',
+            0xA7: 'COLOR',
+            0xA8: 'EXEC',
+            0xA9: 'LOCATE',
+            0xAA: 'PSET',
+            0xAB: 'PRESET',
+            0xAC: 'OFF',
+            0xAD: 'SLEEP',
+            0xAE: 'DIR',
+            0xAF: 'DELETE',
+            0xB0: 'FSET',
+            0xB1: 'PAINT',
+            0xB2: 'LOAD',
+            0xB3: 'SAVE',
+            0xB4: 'INIT',
+            0xB5: 'ERASE',
+            0xB6: 'BEEP',
+            0xB7: 'CLOAD',
+            0xB8: 'CSAVE',
+            0xB9: 'NEW',
+            0xBA: 'TAB(',
+            0xBB: 'TO',
+            0xBC: 'FN',
+            0xBD: 'USING',
+            0xBE: 'ERL',
+            0xBF: 'ERROR',
+            0xC0: 'STRING$',
+            0xC1: 'INSTR',
+            0xC2: 'INKEY$',
+            0xC3: 'INP',
+            0xC4: 'VARPTR',
+            0xC5: 'USR',
+            0xC6: 'SNS',
+            0xC7: 'ALM$',
+            0xC8: 'DATE$',
+            0xC9: 'TIME$',
+            0xCA: 'START$',
+            0xCB: 'FONT$',
+            0xCC: 'KEY$',
+            0xCD: 'SCREEN',
+            0xCE: 'THEN',
+            0xCF: 'NOT',
+            0xD0: 'STEP',
+            0xD1: '+',
+            0xD2: '-',
+            0xD3: '*',
+            0xD4: '/',
+            0xD5: '^',
+            0xD6: 'AND',
+            0xD7: 'OR',
+            0xD8: 'XOR',
+            0xD9: 'EQU',
+            0xDA: 'MOD',
+            0xDB: '\\',
+            0xDC: '>',
+            0xDD: '=',
+            0xDE: '<',
+            0xDF: 'SGN',
+            0xE0: 'INT',
+            0xE1: 'ABS',
+            0xE2: 'FRE',
+            0xE3: 'POS',
+            0xE4: 'SQR',
+            0xE5: 'RND',
+            0xE6: 'LOG',
+            0xE7: 'EXP',
+            0xE8: 'COS',
+            0xE9: 'SIN',
+            0xEA: 'TAN',
+            0xEB: 'ATN',
+            0xEC: 'PEEK',
+            0xED: 'CINT',
+            0xEE: 'CSNG',
+            0xEF: 'CDBL',
+            0xF0: 'FIX',
+            0xF1: 'LEN',
+            0xF2: 'HEX$',
+            0xF3: 'STR$',
+            0xF4: 'VAL',
+            0xF5: 'ASC',
+            0xF6: 'CHR$',
+            0xF7: 'TKEY',
+            0xF8: 'LEFT$',
+            0xF9: 'RIGHT$',
+            0xFA: 'MID$',
+            0xFB: 'CSRLIN',
+            0xFC: 'STICK',
+            0xFD: 'STRIG',
+            0xFE: 'POINT',
+            0xFF: "'"
+        };
+        
+        function log(message, className = '') {
+            const logOutput = document.getElementById('logOutput');
+            const timestamp = new Date().toLocaleTimeString();
+            const logLine = timestamp + ': ' + message + '\n';
+            logOutput.value += logLine;
+            logOutput.scrollTop = logOutput.scrollHeight;
+            
+            // Forcer le rafraîchissement de l'affichage
+            logOutput.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+        
+        // Fonction pour permettre l'affichage en temps réel
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        
+        function resetAll() {
+            // Réinitialiser toutes les variables globales
+            currentFilename = '';
+            binaryData = null;
+            decodedBasic = '';
+            
+            // Vider tous les champs
+            document.getElementById('fileInput').value = '';
+            document.getElementById('filename').textContent = '';
+            document.getElementById('leftArea').value = '';
+            document.getElementById('logOutput').value = '';
+            document.getElementById('rightArea').value = '';
+            
+            // Réinitialiser les placeholders
+            document.getElementById('leftArea').placeholder = 'CAS here...';
+            document.getElementById('logOutput').placeholder = 'Logs ...';
+            document.getElementById('rightArea').placeholder = 'BASIC content...';
+            
+            // Désactiver les boutons
+            document.getElementById('decodeBtn').disabled = true;
+            document.getElementById('saveBtn').disabled = true;
+            
+            log('GUI reseted');
+        }
+        
+        function loadCasFile() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                log('Error: No file selected');
+                return;
+            }
+            
+            log('Loading file: ' + file.name);
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    binaryData = new Uint8Array(e.target.result);
+                    currentFilename = file.name.replace(/\.[^/.]+$/, ""); // Enlever l'extension
+                    
+                    // Afficher le contenu hexadécimal
+                    displayHexOutput(binaryData);
+                    
+                    document.getElementById('filename').textContent = 'File: ' + file.name + ' (' + binaryData.length + ' bytes)';
+                    document.getElementById('buildBtn').disabled = false;
+                    
+                    log('File loaded (' + binaryData.length + ' octets)');
+                    
+                } catch (error) {
+                    log('Loading Error : ' + error.message);
+                }
+            };
+            
+            reader.onerror = function() {
+                log('Error: file unreadable');
+            };
+            
+            reader.readAsArrayBuffer(file);
+        }
+        
+        function displayHexOutput(data) {
+            const hexOutput = document.getElementById('leftArea');
+            let hexString = '';
+            
+            for (let i = 0; i < data.length; i += 16) {
+                // Adresse
+                const addr = i.toString(16).padStart(4, '0').toUpperCase();
+                hexString += addr + '  ';
+                
+                // Octets en hexadécimal
+                let hexPart = '';
+                let asciiPart = '';
+                
+                for (let j = 0; j < 16; j++) {
+                    if (i + j < data.length) {
+                        const byte = data[i + j];
+                        hexPart += byte.toString(16).padStart(2, '0').toUpperCase() + ' ';
+                        asciiPart += (byte >= 32 && byte <= 126) ? String.fromCharCode(byte) : '.';
+                    } else {
+                        hexPart += '   ';
+                        asciiPart += ' ';
+                    }
+                }
+                
+                hexString += hexPart + ' ' + asciiPart + '\n';
+            }
+            
+            hexOutput.value = hexString;
+        }
+        
+        async function decodeCas() {
+            if (!binaryData) {
+                log('Error: No binary data to decode');
+                return;
+            }
+            
+            log('═══════════════════════════════════════');
+            log(' START DECODING');
+            log('═══════════════════════════════════════');
+            
+            try {
+                let pos = 0;
+                
+                // Vérifier l'en-tête
+                log(' Check header...');
+                await sleep(50);
+                
+                // Vérifier les 10 octets leader (0xD3)
+                let validHeader = true;
+                for (let i = 0; i < 10; i++) {
+                    if (binaryData[pos + i] !== 0xD3) {
+                        validHeader = false;
+                        break;
+                    }
+                }
+                
+                if (!validHeader) {
+                    log('⚠️  Warning: None standard header detected');
+                } else {
+                    log('✅ Header check (10 × 0xD3)');
+                }
+                
+                pos += 10;
+                
+                // Extraire le nom du fichier (6 octets)
+                let filename = '';
+                for (let i = 0; i < 6; i++) {
+                    const byte = binaryData[pos + i];
+                    if (byte !== 0) {
+                        filename += String.fromCharCode(byte);
+                    }
+                }
+                pos += 6;
+                
+                log(' File name: "' + filename + '"');
+                await sleep(100);
+                
+                // Décoder les lignes BASIC
+                const basicLines = [];
+                let lineCount = 0;
+                
+                log('───────────────────────────────────────');
+                log(' BASIC Line decoder');
+                log('───────────────────────────────────────');
+                await sleep(50);
+                
+                while (pos < binaryData.length - 1) {
+                    // Lire le pointeur vers la ligne suivante (2 octets, little-endian)
+                    if (pos + 1 >= binaryData.length) break;
+                    
+                    const nextPointer = binaryData[pos] | (binaryData[pos + 1] << 8);
+                    pos += 2;
+                    
+                    // Si le pointeur est 0, c'est la fin du programme
+                    if (nextPointer === 0) {
+                        log(' End of program detected (pointer = 0)');
+                        break;
+                    }
+                    
+                    // Lire le numéro de ligne (2 octets, little-endian)
+                    if (pos + 1 >= binaryData.length) break;
+                    
+                    const lineNumber = binaryData[pos] | (binaryData[pos + 1] << 8);
+                    pos += 2;
+                    
+                    log(' Line ' + lineNumber + ' (pos: 0x' + pos.toString(16) + ')');
+                    
+                    // Trouver la fin de la ligne (délimiteur 0x00)
+                    let lineEnd = pos;
+                    while (lineEnd < binaryData.length && binaryData[lineEnd] !== 0x00) {
+                        lineEnd++;
+                    }
+                    
+                    const lineLength = lineEnd - pos;
+                    log(' Length: ' + lineLength + ' bytes');
+                    
+                    // Décoder le contenu de la ligne
+                    const lineContent = decodeLine(binaryData, pos, lineLength);
+                    pos = lineEnd + 1; // +1 pour passer le délimiteur 0x00
+                    
+                    const decodedLine = lineNumber + ' ' + lineContent;
+                    basicLines.push(decodedLine);
+                    lineCount++;
+                    
+                    log(' Decoded: ' + decodedLine);
+                    log('');
+                    
+                    // Petite pause pour voir le progrès
+                    await sleep(5);
+                }
+                
+                // Trier les lignes par numéro (au cas où)
+                basicLines.sort((a, b) => {
+                    const numA = parseInt(a.split(' ')[0]);
+                    const numB = parseInt(b.split(' ')[0]);
+                    return numA - numB;
+                });
+                
+                log('───────────────────────────────────────');
+                log(' FINAL');
+                log('───────────────────────────────────────');
+                log(' Reorder line...');
+                await sleep(10);
+                
+                // Assembler le code BASIC final
+                decodedBasic = basicLines.join('\n');
+                
+                // Afficher le résultat (utiliser .value pour éviter l'encodage HTML)
+                const basicOutput = document.getElementById('rightArea');
+                basicOutput.value = decodedBasic;
+                document.getElementById('saveBtn').disabled = false;
+                
+                log(' Show BASIC');
+                await sleep(50);
+                
+                log('═══════════════════════════════════════');
+                log('  End of program');
+                log(' ' + lineCount + ' lines found');
+                log(' Ready to save');
+                log('═══════════════════════════════════════');
+                
+            } catch (error) {
+                log(' ERROR during process: ' + error.message);
+                console.error(error);
+            }
+        }
+        
+        function decodeLine(data, startPos, length) {
+            let result = '';
+            let pos = startPos;
+            let inString = false;
+            let transparentMode = false;
+            let dataMode = false; // Mode spécial pour DATA
+            
+            while (pos < startPos + length && pos < data.length) {
+                const byte = data[pos];
+                
+                if (byte === 0x22) { // Guillemet "
+                    inString = !inString;
+                    result += '"';
+                } else if (inString) {
+                    // Dans une chaîne, copier tel quel
+                    result += String.fromCharCode(byte);
+                } else if (byte === 0x3A) { // Deux-points ':'
+                    result += ':';
+                    // Les deux-points terminent le mode DATA mais pas REM ou '
+                    if (dataMode) {
+                        transparentMode = false;
+                        dataMode = false;
+                    }
+                } else if (transparentMode) {
+                    // En mode transparent (après REM, DATA, '), copier tel quel
+                    result += String.fromCharCode(byte);
+                } else if (byte >= 0x80 && byte <= 0xFF) {
+                    // C'est un token
+                    const token = TOKEN_TABLE[byte];
+                    if (token) {
+                        result += token;
+                        
+                        // Gérer les modes spéciaux
+                        if (byte === 0x83) { // DATA
+                            transparentMode = true;
+                            dataMode = true; // Mode DATA spécial
+                            result += ' '; // Ajouter un espace après DATA
+                        } else if (byte === 0x8E) { // REM
+                            transparentMode = true;
+                            dataMode = false;
+                            result += ' '; // Ajouter un espace après REM
+                        } else if (byte === 0xFF) { // '
+                            transparentMode = true;
+                            dataMode = false;
+                            // Pas d'espace après l'apostrophe
+                        } else if (token.length > 1 && !['+', '-', '*', '/', '^', '=', '<', '>', '\\'].includes(token)) {
+                            // Ajouter un espace après les mots-clés (pas les opérateurs)
+                            result += ' ';
+                        }
+                    } else {
+                        // Token inconnu, afficher en hex
+                        result += '\\x' + byte.toString(16).padStart(2, '0').toUpperCase();
+                    }
+                } else {
+                    // Caractère normal
+                    result += String.fromCharCode(byte);
+                }
+                
+                pos++;
+            }
+            
+            return result.trim();
+        }
+        
+        function saveBasicFile() {
+            if (!decodedBasic) {
+                log('Error: No BASIC code  to save');
+                return;
+            }
+            
+            try {
+                const blob = new Blob([decodedBasic], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = currentFilename + '.bas';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                
+                URL.revokeObjectURL(url);
+                
+                log(' File saved: ' + currentFilename + '.bas');
+                
+            } catch (error) {
+                log(' Error during saving .bas: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

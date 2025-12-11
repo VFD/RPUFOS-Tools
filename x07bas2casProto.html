@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<!-- Meta information -->
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="VincentD">
+
+		<!-- Page title -->
+		<title>RPUFOS X07 BAS to CAS</title>
+
+		<!-- CSS stylesheet -->
+		<link rel="stylesheet" href="css/styles.css">
+
+		<!-- CSS if FOUC -->
+		<!--
+		<link rel="preload" href="styles.css" as="style" onload="this.rel='stylesheet'">
+		<noscript><link rel="stylesheet" href="style.css"></noscript>
+		-->
+
+		<!-- Favicon (optional) -->
+		<link rel="icon" href="Logos/RPUFOS_Logo.ico" type="image/x-icon">
+
+		<!-- Scripts éventuels -->
+		<!-- <script src="js/script.js" defer></script> -->
+	</head>
+
+<body>
+
+
+		<!-- Header section -->
+		<header>
+			<div class="header-container">
+				<a href="index.html">
+					<img src="Logos/RPUFOS_Logo-512.png" alt="Logo" class="logo" />
+				</a>
+				<h1>BAS to CAS<br />(Canon X-07)</h1>
+			</div>
+		</header>
+
+		<hr />
+		<!-- Main content -->
+		<main>
+			<h2>BASIC to X07 CAS file converter</h2>
+			<h3>Objective</h3>
+			<p>The goal is to convert BASIC programs (in text file form) into the CAS format, a binary used for emulators.<br />
+			The CAS file can then be converted into WAV format for real machines.</p>
+			<h3>How to</h3>
+			<p>Load the file, Show bas,  Convert, if ok, Save it (donwload folder).</p>
+			<hr />
+			<input type="file" id="fileInput" accept=".bas,.txt" />
+			<hr />
+			<button id="loadBtn" onclick="loadFile()">Show Bas</button>
+			<button id="buildBtn" onclick="convertToCas()" disabled>Convert</button>
+			<button id="saveBtn" onclick="saveCasFile()" disabled>Save</button>
+			<hr />
+			<!-- File name display -->
+			<span id="filename">No file loaded...</span>			
+			<hr />			
+			<!-- Two textareas side by side -->
+			<div style="display:flex; gap: 12px; align-items:flex-start; justify-content:center;">
+				<!-- Left textarea -->
+				<div style="flex:1;">
+					<fieldset>
+					<legend>Basic</legend>
+					<div class="text-size-controls">
+						<button id="leftFontInc">A+</button>
+						<button id="leftFontDec">A-</button>
+					</div>
+					<!-- <textarea id="leftArea" readonly>BASIC content...</textarea> -->
+					<textarea id="basicCode">BASIC content...</textarea>
+					</fieldset>
+				</div>
+				<!-- Right textarea -->
+				<div style="flex:1;">
+				<fieldset>
+					<legend>CAS (hex view)</legend>
+					<div class="text-size-controls">
+						<button id="rightFontInc">A+</button>
+						<button id="rightFontDec">A-</button>
+					</div>
+					<textarea id="hexOutput" readonly>CAS here...</textarea>
+					<!-- <textarea id="rightArea" readonly>CAS here...</textarea> -->
+					</fieldset>
+				</div>
+			</div>
+			<!--  -->
+			<hr />
+			<div>
+				<h3>Log</h3>
+				<textarea id="logOutput" placeholder="Logs ..." readonly></textarea>
+			</div>
+			<!--  -->
+
+		</main>
+		<hr />
+		<!-- Footer section -->
+		<footer>
+			<img src="Logos/CC-BY-NC-ND-EU.png" alt="CC by NC ND EU" />
+			<p>&copy; 2025 VincentD - RPUFOS Work Tools</p>
+		</footer>
+
+
+
+    <script>
+        // Variables globales
+        let currentFilename = '';
+        let basicContent = '';
+        let binaryData = null;
+        
+        // Table des tokens BASIC
+        const TOKENS = [
+            // Mots-clés (du plus long au plus court pour éviter les conflits)
+            { text: 'PRINT', token: 0x9F, flag: 0 },
+            { text: 'INPUT', token: 0xA0, flag: 0 },
+            { text: 'IF', token: 0x8A, flag: 0 },
+            { text: 'THEN', token: 0xCE, flag: 0 },
+            { text: 'ELSE', token: 0x90, flag: 0x02 },
+            { text: 'FOR', token: 0x81, flag: 0 },
+            { text: 'TO', token: 0xBB, flag: 0 },
+            { text: 'STEP', token: 0xBC, flag: 0 },
+            { text: 'NEXT', token: 0x82, flag: 0 },
+            { text: 'GOTO', token: 0x89, flag: 0 },
+            { text: 'GOSUB', token: 0x8D, flag: 0 },
+            { text: 'RETURN', token: 0x8C, flag: 0 },
+            { text: 'REM', token: 0x8E, flag: 0x01 },
+            { text: 'DATA', token: 0x83, flag: 0x01 },
+            { text: 'READ', token: 0x87, flag: 0 },
+            { text: 'RESTORE', token: 0x8B, flag: 0 },
+            { text: 'END', token: 0x80, flag: 0 },
+            { text: 'STOP', token: 0x88, flag: 0 },
+            { text: 'ON', token: 0x95, flag: 0 },
+            { text: 'DIM', token: 0x86, flag: 0 },
+            { text: 'DEF', token: 0x97, flag: 0 },
+            { text: 'FN', token: 0x98, flag: 0 },
+            { text: 'LET', token: 0x84, flag: 0 },
+            { text: 'RUN', token: 0x8F, flag: 0 },
+            { text: 'LIST', token: 0x93, flag: 0 },
+            { text: 'NEW', token: 0x94, flag: 0 },
+            { text: 'SAVE', token: 0x91, flag: 0 },
+            { text: 'LOAD', token: 0x92, flag: 0 },
+            { text: 'AND', token: 0xD8, flag: 0 },
+            { text: 'OR', token: 0xD9, flag: 0 },
+            { text: 'NOT', token: 0xDA, flag: 0 },
+            // Opérateurs
+            { text: '<=', token: 0xE1, flag: 0 },
+            { text: '>=', token: 0xE0, flag: 0 },
+            { text: '<>', token: 0xDF, flag: 0 },
+            { text: '=', token: 0xDD, flag: 0 },
+            { text: '<', token: 0xDE, flag: 0 },
+            { text: '>', token: 0xDC, flag: 0 },
+            { text: '+', token: 0xD1, flag: 0 },
+            { text: '-', token: 0xD2, flag: 0 },
+            { text: '*', token: 0xD3, flag: 0 },
+            { text: '/', token: 0xD4, flag: 0 },
+            { text: '^', token: 0xD5, flag: 0 },
+            // Commentaire
+            { text: "'", token: 0xFF, flag: 0x05 } // REM + transparent
+        ];
+        
+        function log(message) {
+            const logOutput = document.getElementById('logOutput');
+            logOutput.value += new Date().toLocaleTimeString() + ': ' + message + '\n';
+            logOutput.scrollTop = logOutput.scrollHeight;
+        }
+        
+        function loadFile() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                log('Error: No files selected');
+                return;
+            }
+            
+            log('Loading the file: ' + file.name);
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    // Vérifier si c'est de l'UTF-8 valide
+                    const content = e.target.result;
+                    
+                    // Test simple pour vérifier l'UTF-8
+                    const encoder = new TextEncoder();
+                    const decoder = new TextDecoder('utf-8', { fatal: true });
+                    
+                    try {
+                        const encoded = encoder.encode(content);
+                        const decoded = decoder.decode(encoded);
+                        
+                        if (decoded !== content) {
+                            throw new Error('Contenu non UTF-8');
+                        }
+                    } catch (err) {
+                        log('Error: The file is not in valid UTF-8');
+                        return;
+                    }
+                    
+                    basicContent = content;
+                    currentFilename = file.name.replace(/\.[^/.]+$/, ""); // Enlever l'extension
+                    
+                    document.getElementById('basicCode').value = content;
+                    document.getElementById('filename').textContent = 'File: ' + file.name;
+                    document.getElementById('buildBtn').disabled = false;
+                    
+                    log('Successfully loaded file (' + content.length + ' characters)');
+                    
+                } catch (error) {
+                    log('Error loading: ' + error.message);
+                }
+            };
+            
+            reader.onerror = function() {
+                log('Error: Unable to read file');
+            };
+            
+            reader.readAsText(file, 'UTF-8');
+        }
+        
+        function convertToCas() {
+            if (!basicContent) {
+                log('Error: No BASIC content to convert');
+                return;
+            }
+            
+            log('Start Conversion...');
+            
+            try {
+                // Créer le fichier binaire
+                const binary = [];
+                
+                // En-tête: 10 octets leader (0xD3) + 6 octets nom fichier
+                log('Création de l\'en-tête...');
+                for (let i = 0; i < 10; i++) {
+                    binary.push(0xD3);
+                }
+                
+                // Nom du fichier (6 caractères max, complété par des zéros)
+                const filename = currentFilename.substring(0, 6).toUpperCase();
+                for (let i = 0; i < 6; i++) {
+                    if (i < filename.length) {
+                        binary.push(filename.charCodeAt(i));
+                    } else {
+                        binary.push(0x00);
+                    }
+                }
+                
+                // Traiter chaque ligne
+                const lines = basicContent.split(/\r?\n/);
+                let linePointer = 0x553; // Adresse de début de la zone BASIC
+                let previousLineNumber = -1; // Changé de 0 à -1 pour accepter la ligne 0
+                
+                log('Treatment of ' + lines.length + ' lines...');
+                
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+                    
+                    // Extraire le numéro de ligne
+                    const match = line.match(/^(\d+)\s*(.*)/);
+                    if (!match) {
+                        log('Ignore line (No number): ' + line);
+                        continue;
+                    }
+                    
+                    const lineNumber = parseInt(match[1]);
+                    const lineContent = match[2];
+                    
+                    // Accepter maintenant la ligne 0
+                    if (lineNumber <= previousLineNumber) {
+                        log('Error: Non-ascending line number: ' + lineNumber + ' (precedent: ' + previousLineNumber + ')');
+                        continue;
+                    }
+                    
+                    log('line ' + lineNumber + ': ' + lineContent);
+                    
+                    // Tokeniser la ligne
+                    const tokenizedLine = tokenizeLine(lineContent);
+                    
+                    // Calculer la taille de la ligne encodée
+                    const lineSize = 4 + tokenizedLine.length + 1; // pointeur(2) + numéro(2) + contenu + délimiteur(1)
+                    
+                    // Pointeur vers la ligne suivante
+                    const nextPointer = linePointer + lineSize;
+                    binary.push(nextPointer & 0xFF);
+                    binary.push((nextPointer >> 8) & 0xFF);
+                    
+                    // Numéro de ligne (little-endian)
+                    binary.push(lineNumber & 0xFF);
+                    binary.push((lineNumber >> 8) & 0xFF);
+                    
+                    // Contenu tokenisé
+                    for (let j = 0; j < tokenizedLine.length; j++) {
+                        binary.push(tokenizedLine[j]);
+                    }
+                    
+                    // Délimiteur fin de ligne
+                    binary.push(0x00);
+                    
+                    linePointer = nextPointer;
+                    previousLineNumber = lineNumber;
+                }
+                
+                // Fin de fichier (11 zéros)
+                for (let i = 0; i < 11; i++) {
+                    binary.push(0x00);
+                }
+                
+                binaryData = new Uint8Array(binary);
+                
+                // Afficher en hexadécimal
+                displayHexOutput(binaryData);
+                
+                document.getElementById('saveBtn').disabled = false;
+                log('Conversion success (' + binary.length + ' octets)');
+                
+            } catch (error) {
+                log('Error during conversion: ' + error.message);
+            }
+        }
+        
+        function tokenizeLine(line) {
+            const result = [];
+            let pos = 0;
+            let inString = false;
+            let transparentMode = false;
+            
+            // Normaliser: convertir en majuscules hors chaînes
+            let normalizedLine = '';
+            let tempInString = false;
+            for (let i = 0; i < line.length; i++) {
+                const c = line[i];
+                if (c === '"') {
+                    tempInString = !tempInString;
+                    normalizedLine += c;
+                } else if (tempInString) {
+                    normalizedLine += c; // Garder tel quel dans les chaînes
+                } else {
+                    normalizedLine += c.toUpperCase();
+                }
+            }
+            
+            while (pos < normalizedLine.length) {
+                const c = normalizedLine[pos];
+                
+                if (c === '"') {
+                    inString = !inString;
+                    result.push(c.charCodeAt(0));
+                    pos++;
+                } else if (inString || transparentMode) {
+                    result.push(c.charCodeAt(0));
+                    pos++;
+                } else {
+                    // Chercher le token le plus long
+                    let tokenFound = false;
+                    
+                    for (let token of TOKENS) {
+                        if (normalizedLine.substring(pos).startsWith(token.text)) {
+                            result.push(token.token);
+                            
+                            // Gérer les flags
+                            if (token.flag & 0x01) { // Mode transparent
+                                transparentMode = true;
+                            }
+                            if (token.flag & 0x02) { // Insérer ':'
+                                // Pour ELSE, insérer ':' avant
+                                result.splice(-1, 0, 0x3A); // ':' = 0x3A
+                            }
+                            if (token.flag & 0x04) { // Insérer REM
+                                result.push(0x8E); // Token REM
+                            }
+                            
+                            pos += token.text.length;
+                            tokenFound = true;
+                            break;
+                        }
+                    }
+                    
+                    if (!tokenFound) {
+                        result.push(c.charCodeAt(0));
+                        pos++;
+                    }
+                }
+            }
+            
+            return result;
+        }
+        
+        function displayHexOutput(data) {
+            const hexOutput = document.getElementById('hexOutput');
+            let hexString = '';
+            
+            for (let i = 0; i < data.length; i += 16) {
+                // Adresse
+                const addr = i.toString(16).padStart(4, '0').toUpperCase();
+                hexString += addr + '  ';
+                
+                // Octets en hexadécimal
+                let hexPart = '';
+                let asciiPart = '';
+                
+                for (let j = 0; j < 16; j++) {
+                    if (i + j < data.length) {
+                        const byte = data[i + j];
+                        hexPart += byte.toString(16).padStart(2, '0').toUpperCase() + ' ';
+                        asciiPart += (byte >= 32 && byte <= 126) ? String.fromCharCode(byte) : '.';
+                    } else {
+                        hexPart += '   ';
+                        asciiPart += ' ';
+                    }
+                }
+                
+                hexString += hexPart + ' ' + asciiPart + '\n';
+            }
+            
+            hexOutput.value = hexString;
+        }
+        
+        function saveCasFile() {
+            if (!binaryData) {
+                log('Error: No binary to save');
+                return;
+            }
+            
+            try {
+                const blob = new Blob([binaryData], { type: 'application/octet-stream' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = currentFilename + '.cas';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                
+                URL.revokeObjectURL(url);
+                
+                log('File saved: ' + currentFilename + '.cas');
+                
+            } catch (error) {
+                log('Error during save: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
