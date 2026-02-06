@@ -29,11 +29,11 @@ const NAK = "#";
 // Notes:
 // - Strings that had trailing spaces in C are kept (e.g., " PRINT ").
 // - Some entries are tokens, some are simple characters.
-// - Wherever the C had NAK, we put "#".
+// - Wherever the C had NAK, we put "#". Before there is a check with quadBlocks.
 // - 234 is REM; used to control FP skip logic.
 const charset = [
   /* 000-009 */ " ", NAK, NAK, NAK, NAK, NAK, NAK, NAK, NAK, NAK,
-  /* 010-019 */ NAK, "\"", "Ý", "$", ":", "?", "(", ")", ">", "<",
+  /* 010-019 */ NAK, "\"", "£", "$", ":", "?", "(", ")", ">", "<",
   /* 020-029 */ "=", "+", "-", "*", "/", ";", ",", ".", "0", "1",
   /* 030-039 */ "2", "3", "4", "5", "6", "7", "8", "9", "A", "B",
   /* 040-049 */ "C", "D", "E", "F", "G", "H", "I", "J", "K", "L",
@@ -46,7 +46,7 @@ const charset = [
   /* 110-119 */ NAK, NAK, NAK, NAK, NAK, NAK, NAK, NAK, NAK, NAK,
   /* 120-129 */ NAK, NAK, NAK, NAK, NAK, NAK, NAK, NAK, NAK, NAK,
   /* 130-139 */ NAK, NAK, NAK, NAK, NAK, NAK, NAK, NAK, NAK, "\"",
-  /* 140-149 */ "Ý", "$", ":", "?", "(", ")", ">", "<", "=", "+",
+  /* 140-149 */ "£", "$", ":", "?", "(", ")", ">", "<", "=", "+",
   /* 150-159 */ "-", "*", "/", ";", ",", ".", "0", "1", "2", "3",
   /* 160-169 */ "4", "5", "6", "7", "8", "9", "a", "b", "c", "d",
   /* 170-179 */ "e", "f", "g", "h", "i", "j", "k", "l", "m", "n",
@@ -56,8 +56,8 @@ const charset = [
   /* 200-209 */ "COS ", "TAN ", "ASN ", "ACS ", "ATN ", "LN ", "EXP ",
 				"INT ", "SQR ", "SGN ",
   /* 210-219 */ "ABS ", "PEEK ", "USR ", "STR$ ", "CHR$ ", "NOT ",
-				"**", " OR ", " AND ", "<=",
-  /* 220-229 */ ">=", "<>", " THEN", " TO ", " STEP ", " LPRINT ",
+				"^", " OR ", " AND ", "≤",
+  /* 220-229 */ "≥", "≠", " THEN", " TO ", " STEP ", " LPRINT ",
 				" LLIST ", " STOP", " SLOW", " FAST",
   /* 230-239 */ " NEW", " SCROLL", " CONT ", " DIM ", " REM ",
 				" FOR ", " GOTO ", " GOSUB ", " INPUT ",
@@ -98,7 +98,43 @@ const quadBlocks = {
   "87": "▗",  // QUADRANT LOWER RIGHT (U+2597)
   "88": "🮐",  // BLOCK SEXTANT-1 (U+1FB90)
   "89": "🮑",  // BLOCK SEXTANT-2 (U+1FB91)
-  "8A": "🮒"   // BLOCK SEXTANT-3 (U+1FB92)
+  "8A": "🮒",   // BLOCK SEXTANT-3 (U+1FB92)
+  "9C": "🄌", // 0 (U+1F10C NEGATIVE CIRCLED DIGIT ZERO)
+  "9D": "➊", // 1 (U+278A DINGBAT NEGATIVE CIRCLED DIGIT ONE)
+  "9E": "➋", // 2 (U+278B DINGBAT NEGATIVE CIRCLED DIGIT TWO)
+  "9F": "➌", // 3 (U+278C DINGBAT NEGATIVE CIRCLED DIGIT THREE)
+  "A0": "➍", // 4 (U+278D DINGBAT NEGATIVE CIRCLED DIGIT FOUR)
+  "A1": "➎", // 5 (U+278E DINGBAT NEGATIVE CIRCLED DIGIT FIVE)
+  "A2": "➏", // 6 (U+278F DINGBAT NEGATIVE CIRCLED DIGIT SIX)
+  "A3": "➐", // 7 (U+2790 DINGBAT NEGATIVE CIRCLED DIGIT SEVEN)
+  "A4": "➑", // 8 (U+2791 DINGBAT NEGATIVE CIRCLED DIGIT EIGHT)
+  "A5": "➒", // 9 (U+2792 DINGBAT NEGATIVE CIRCLED DIGIT NINE)
+  "A6": "🅐", // A (U+1F150 NEGATIVE CIRCLED LATIN CAPITAL LETTER A)
+  "A7": "🅑", // B (U+1F151 NEGATIVE CIRCLED LATIN CAPITAL LETTER B)
+  "A8": "🅒", // C (U+1F152 NEGATIVE CIRCLED LATIN CAPITAL LETTER C)
+  "A9": "🅓", // D (U+1F153 NEGATIVE CIRCLED LATIN CAPITAL LETTER D)
+  "AA": "🅔", // E (U+1F154 NEGATIVE CIRCLED LATIN CAPITAL LETTER E)
+  "AB": "🅕", // F (U+1F155 NEGATIVE CIRCLED LATIN CAPITAL LETTER F)
+  "AC": "🅖", // G (U+1F156 NEGATIVE CIRCLED LATIN CAPITAL LETTER G)
+  "AD": "🅗", // H (U+1F157 NEGATIVE CIRCLED LATIN CAPITAL LETTER H)
+  "AE": "🅘", // I (U+1F158 NEGATIVE CIRCLED LATIN CAPITAL LETTER I)
+  "AF": "🅙", // J (U+1F159 NEGATIVE CIRCLED LATIN CAPITAL LETTER J)
+  "B0": "🅚", // K (U+1F15A NEGATIVE CIRCLED LATIN CAPITAL LETTER K)
+  "B1": "🅛", // L (U+1F15B NEGATIVE CIRCLED LATIN CAPITAL LETTER L)
+  "B2": "🅜", // M (U+1F15C NEGATIVE CIRCLED LATIN CAPITAL LETTER M)
+  "B3": "🅝", // N (U+1F15D NEGATIVE CIRCLED LATIN CAPITAL LETTER N)
+  "B4": "🅞", // O (U+1F15E NEGATIVE CIRCLED LATIN CAPITAL LETTER O)
+  "B5": "🅟", // P (U+1F15F NEGATIVE CIRCLED LATIN CAPITAL LETTER P)
+  "B6": "🅠", // Q (U+1F160 NEGATIVE CIRCLED LATIN CAPITAL LETTER Q)
+  "B7": "🅡", // R (U+1F161 NEGATIVE CIRCLED LATIN CAPITAL LETTER R)
+  "B8": "🅢", // S (U+1F162 NEGATIVE CIRCLED LATIN CAPITAL LETTER S)
+  "B9": "🅣", // T (U+1F163 NEGATIVE CIRCLED LATIN CAPITAL LETTER T)
+  "BA": "🅤", // U (U+1F164 NEGATIVE CIRCLED LATIN CAPITAL LETTER U)
+  "BB": "🅥", // V (U+1F165 NEGATIVE CIRCLED LATIN CAPITAL LETTER V)
+  "BC": "🅦", // W (U+1F166 NEGATIVE CIRCLED LATIN CAPITAL LETTER W)
+  "BD": "🅧", // X (U+1F167 NEGATIVE CIRCLED LATIN CAPITAL LETTER X)
+  "BE": "🅨", // Y (U+1F168 NEGATIVE CIRCLED LATIN CAPITAL LETTER Y)
+  "BF": "🅩" // Z (U+1F169 NEGATIVE CIRCLED LATIN CAPITAL LETTER Z)
 }
 
 // Whether to attempt semigraphics approximations
