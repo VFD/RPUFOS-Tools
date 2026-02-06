@@ -77,24 +77,29 @@ const REM_TOKEN = 234;
 // combinations using Unicode block elements. This is experimental.
 // If a byte maps to NAK ("#"), and it's in displayable ranges,
 // we try substituting with one of these. This is NOT a perfect mapping.
-const quadBlocks = [
-  " ",       // 0: empty
-  "▘",       // 1: upper-left
-  "▝",       // 2: upper-right
-  "▀",       // 3: upper half
-  "▖",       // 4: lower-left
-  "▌",       // 5: left half
-  "▞",       // 6: diag upper-right + lower-left
-  "▛",       // 7: UL+UR+LL
-  "▗",       // 8: lower-right
-  "▚",       // 9: diag upper-left + lower-right
-  "▐",       // 10: right half
-  "▜",       // 11: UL+UR+LR
-  "▄",       // 12: lower half
-  "▙",       // 13: UL+LL+LR
-  "▟",       // 14: UR+LL+LR
-  "█"        // 15: full block
-];
+const quadBlocks = {
+  "01": "▘",  // upper-left (U+2598)
+  "02": "▝",  // upper-right (U+259D)
+  "03": "▀",  // upper half (U+2580)
+  "04": "▖",  // lower-left (U+2596)
+  "05": "▌",  // left half (U+258C)
+  "06": "▞",  // diag upper-right + lower-left (U+259E)
+  "07": "▛",  // UL+UR+LL (U+259B)
+  "08": "▒",  // MEDIUM SHADE (U+2592)
+  "09": "🮏",  // INVERSE MEDIUM SHADE (U+1FB8F)
+  "0A": "🮎",  // INVERSE CHECKER BOARD FILL (U+1FB8E)
+  "80": "█",  // full block (U+2588)
+  "81": "▟",  // UR+LL+LR (U+259F)
+  "82": "▙",  // UL+LL+LR (U+2599)
+  "83": "▄",  // lower half (U+2584)
+  "84": "▜",  // UL+UR+LR (U+259C)
+  "85": "▐",  // right half (U+2590)
+  "86": "▚",  // diag upper-left + lower-right (U+259A)
+  "87": "▗",  // QUADRANT LOWER RIGHT (U+2597)
+  "88": "🮐",  // BLOCK SEXTANT-1 (U+1FB90)
+  "89": "🮑",  // BLOCK SEXTANT-2 (U+1FB91)
+  "8A": "🮒"   // BLOCK SEXTANT-3 (U+1FB92)
+}
 
 // Whether to attempt semigraphics approximations
 let useGraphics = false;
@@ -300,16 +305,24 @@ function translateLine(lineBytes, useGraphicsBlocks) {
 
 
 /**
- * Approximate semigraphics using Unicode quadrant/block characters.
- * This is a heuristic for display purposes only.
- * You can tailor this to your actual ZX81 graphic codes if known.
+ * Converts a code to an approximate graphic character
+ * @param {number} code - The code to convert
+ * @return {string} The corresponding graphic character or NAK if not found
  */
 function approximateGraphic(code) {
   // Try to map codes within typical displayable ranges.
   // ZX81 inverse video lives in 128–191; base glyphs in 0–63.
-  // Here we just use low 4 bits to select a block pattern as a crude approximation.
-  const idx = code & 0x0F;
-  return quadBlocks[idx] || NAK;
+  // Use first digit to determine if we're in inverse video range
+  const prefix = (code >= 128 && code <= 191) ? "8" : "0";
+  
+  // Get last hex digit for the specific character
+  const suffix = (code & 0x0F).toString(16).toUpperCase();
+  
+  // Combine to form the lookup key
+  const lookupKey = prefix + suffix;
+  
+  // Return the character or NAK if not found
+  return quadBlocks[lookupKey] || NAK;
 }
 
 // -------------------- EOF --------------------
