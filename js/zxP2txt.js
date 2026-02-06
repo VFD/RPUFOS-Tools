@@ -310,19 +310,11 @@ function translateLine(lineBytes, useGraphicsBlocks) {
  * @return {string} The corresponding graphic character or NAK if not found
  */
 function approximateGraphic(code) {
-  // Try to map codes within typical displayable ranges.
-  // ZX81 inverse video lives in 128–191; base glyphs in 0–63.
-  // Use first digit to determine if we're in inverse video range
-  const prefix = (code >= 128 && code <= 191) ? "8" : "0";
+  // Convert code to hex string (e.g. 128 -> "80")
+  const hexCode = code.toString(16).padStart(2, '0').toLowerCase();
   
-  // Get last hex digit for the specific character
-  const suffix = (code & 0x0F).toString(16).toUpperCase();
-  
-  // Combine to form the lookup key
-  const lookupKey = prefix + suffix;
-  
-  // Return the character or NAK if not found
-  return quadBlocks[lookupKey] || NAK;
+  // Look up the character directly in the quadBlocks table
+  return quadBlocks[hexCode] || NAK;
 }
 
 // -------------------- EOF --------------------
