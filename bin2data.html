@@ -97,7 +97,7 @@
 		<!-- -->
 		<hr />
 		<h3>POKE from DATA: concatenated vs comma‑separated</h3>
-		<p>Expect about <b>30–35% less source size</b> when using concatenated hex strings (16 bytes per line).</p>
+		<p>Expect about <b>30–35% less source size</b> (may be more) when using concatenated hex strings (16 bytes per line).</p>
 		<section>
 			<h4>Example 1: Concatenated hex blocks</h4>
 			<p>In this version, each DATA line contains a long string of hexadecimal characters representing 16 bytes.
@@ -112,7 +112,7 @@
 			1050 IF D$="ZZ" THEN 2020
 			1060 FOR I=1 TO LEN(D$) STEP 2
 			1070   V = VAL("&H"+MID$(D$,I,2))
-			180   POKE ADR, V
+			1080   POKE ADR, V
 			1090   ADR = ADR + 1
 			2000 NEXT I
 			2010 GOTO 1040
@@ -158,3 +158,4 @@
 </html>
 
 <!-- EOF -->
+
