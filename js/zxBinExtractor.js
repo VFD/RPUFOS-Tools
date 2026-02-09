@@ -55,7 +55,7 @@ extractBtn.addEventListener('click', () => {
 	} else {
 	  extractedBin = result.bin;
 	  saveBtn.disabled = false;
-	  const baseAddr = 0x43A0 + 4 + 1; // <-- Correct start address: 0x4005
+	  const baseAddr = 0x4082; // <-- Correct start address: 0x4082 (16514)
 	  status.textContent = `Extracted ${extractedBin.length} bytes from REM line ${result.lineNumber}, starting at ${baseAddr} (0x${baseAddr.toString(16).toUpperCase()}).`;
 	  output.value =
 		`First line number: ${result.lineNumber}\n` +
@@ -127,6 +127,7 @@ function hexPreview(bytes, width = 16, baseAddr = 0x43A0) {
   }
   return out;
 }
+
 
 
 // -------------------- EOF --------------------
