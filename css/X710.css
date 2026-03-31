@@ -1,0 +1,121 @@
+/* ============================================================
+   File: base.css
+   Description: 
+   Author: VincentD
+   Created: November 26, 2025
+   Last Updated: November 26, 2025
+   Version: 1.0
+   ============================================================ */
+
+
+
+body {
+  font-family: sans-serif;
+  margin: 20px;
+}
+
+/* Section COM */
+.com {
+  margin-bottom: 20px;
+}
+.com label {
+  margin-right: 10px;
+}
+.com button {
+  margin-left: 10px;
+}
+
+/* Section Files */
+.files {
+  margin-bottom: 20px;
+}
+.files input[type="file"] {
+  margin-right: 10px;
+}
+
+/* Layout 20% / 80% */
+.layout {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+.commands {
+  flex: 0 0 20%;
+}
+
+.canvas {
+  flex: 0 0 80%;
+}
+
+/* Éléments */
+textarea {
+  width: 100%;
+  min-height: 220px;   /* hauteur minimale */
+  resize: vertical;    /* l’utilisateur peut étendre vers le bas */
+  font-size: 0.75em;
+}
+
+
+.layout {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  padding-right: 20px;   /* espace à droite pour éviter le canvas collé */
+  box-sizing: border-box;
+}
+
+.canvas {
+  flex: 0 0 80%;
+}
+
+canvas {
+  border: 1px solid #000;
+  display: block;
+  margin-top: 10px;
+  width: 100%;
+  height: auto;
+}
+
+label {
+  display: inline-block;
+  margin-right: 10px;
+}
+select {
+  margin-left: 5px;
+}
+
+/* documentation */
+
+summary {
+  display: flex;
+  list-style: none;       /* supprime le triangle */
+  align-items: center;
+  cursor: pointer;
+}
+
+summary h2,
+summary h3 {
+  display: inline;
+  margin: 0;
+}
+
+summary::-webkit-details-marker {
+  display: none;          /* supprime le triangle sur Chrome/Safari */
+}
+
+details details {
+  margin-left: 20px;   /* indentation des sous-sections */
+}
+
+
+details[open] > summary::before {
+  content: "➖ ";
+}
+
+details > summary::before {
+  content: "➕ ";
+}
+
+
+/* ==================== EOF ===================== */
