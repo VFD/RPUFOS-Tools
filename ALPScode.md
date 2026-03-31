@@ -1,4 +1,6 @@
-# 📜 Commandes HP‑GL / DXY‑GL (ALPS / Canon X‑07)
+# 📜 Commandes HP‑GL / DXY‑GL
+
+NOT FOR X07 X710.
 
 ## 🔧 Initialisation et configuration
 | Commande | Description | Exemple |
