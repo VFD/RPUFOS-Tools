@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+	<!--      -->
+	<!-- HEAD -->
+	<!--      -->
+	<head>
+		<!-- Meta information -->
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="VincentD">
+
+		<!-- Page title -->
+		<title>X710 Simulator alpha</title>
+
+		<!-- CSS stylesheet -->
+		<link rel="stylesheet" href="css/styles.css">
+		<link rel="stylesheet" href="css/X710.css">
+
+		<!-- CSS if FOUC -->
+		<!--
+		<link rel="preload" href="styles.css" as="style" onload="this.rel='stylesheet'">
+		<noscript><link rel="stylesheet" href="style.css"></noscript>
+		-->
+
+		<!-- Favicon (optional) -->
+		<link rel="icon" href="assets/RPUFOS_Logo.ico" type="image/x-icon">
+
+		<!-- Scripts -->
+		<!-- <script src="js/xx.js" defer></script> -->
+	
+	</head>
+
+	<!--      -->
+	<!-- BODY -->
+	<!--      -->
+	<body>
+		<!-- Header section -->
+		<header>
+			<div class="header-container">
+				<a href="index.html">
+					<img src="assets/RPUFOS_Logo-512.png" alt="Logo" class="logo" />
+				</a>
+				<h1>RPUFOS X710 Graphic Simulator</h1>
+			</div>
+			<p style="text-align:center;"><i>alpha version</i></p>
+		</header>
+
+		<hr />
+		<h2>Explain</h2>
+		<p>This project demonstrates the X710 protocol using a virtual plotter with
+		four pens to draw and test <a href="#documentation">basic commands</a> (see below).<br />
+		Only for Graphic Mode.<br />
+		Compatible plotters: Tandy CGP-115, Commodore VIC‑1520, Atari 1020, ...<br />
+		JavaScript must be finished:
+			<ul>
+				<li>C, D, J, M, R comands: implemented, in test</li>
+				<li>F, H, I, L, P, Q, S commands not implemented yet</li>
+				<li>Open the // port to listen the X07 (this will be very fun)</li>
+			</ul>
+		</p>
+		<hr />
+
+		<!--              -->
+		<!-- Main content -->
+		<!--              -->
+		<main>
+		<!-- Section Open // -->
+		<!--
+		The idea is to open a // com to receive from X07.
+		-->
+			<!-- Section Load file -->
+			<section class="files">
+				<h2>File to load</h2>
+				<p>Typically saved as a .plt file.</p>
+				<input type="file" id="fileInput">
+				<br /><br />
+				<span id="filename">No file loaded!</span>
+			</section>
+			<hr />
+			<!--                   -->
+			<!-- Section 20% / 80% -->
+			<!--                   -->
+			<!-- commands (20%) -->
+			<section class="layout">
+				<div class="commands">
+					<h3 style="text-align:center;">Cmds X710</h3>
+					<p style="text-align:center;"><i>1 Cmd by line please.</i></p>
+					<textarea id="commandsArea"></textarea><br />
+					<button id="btnTrace">Draw</button>
+					<button id="btnClear">Clear</button>
+					<br /><hr />
+					<label><input type="checkbox" id="autoplay"> Autoplay</label>
+					<br /><hr />
+					<label>Nom du fichier :
+					<input type="text" id="plotterName" value="Plotter"> .plt
+					</label>
+					<br /><hr />
+					<button id="btnSaveCommands">Save</button>
+					<hr />
+				</div>
+				<!-- Zone canvas (80%) -->
+				<div class="canvas">
+					<div class="canvas-inner">
+						<h3 style="text-align:center;">Canvas</h3>
+						<p style="text-align:center;">480x2048 by X710 definition</p>
+						<hr />
+						<button id="btnNew">Reset</button>
+						<button id="btnSavePNG">Save PNG</button>
+						<button id="btnSaveSVG">Save SVG</button>
+						<hr />
+						<label>Stylo 1
+						<select id="pen1Color">
+							<option value="#000000" selected>Black</option>
+							<option value="#ff0000">Red</option>
+							<option value="#00ff00">Green</option>
+							<option value="#0000ff">Blue</option>
+						</select>
+						</label>
+						<label>Stylo 2
+						<select id="pen2Color">
+							<option value="#000000">Black</option>
+							<option value="#0000ff" selected>Blue</option>
+							<option value="#00ff00">Green</option>
+							<option value="#ff0000">Red</option>
+						</select>
+						</label>
+						<label>Stylo 3
+						<select id="pen3Color">
+							<option value="#000000">Black</option>
+							<option value="#0000ff">Blue</option>
+							<option value="#00ff00" selected>Green</option>
+							<option value="#ff0000">Red</option>
+						</select>
+						</label>
+						<label>Stylo 4
+						<select id="pen4Color">
+							<option value="#000000">Black</option>
+							<option value="#0000ff">Blue</option>
+							<option value="#00ff00">Green</option>
+							<option value="#ff0000" selected>Red</option>
+						</select>
+						</label>
+						<hr />
+						<p>
+							<b>Origin: </b><span>x,y</span>&emsp;
+							<b>Last x,y: </b>x,y<span></span>&emsp;
+							<b>Color selected: </b><span>c</span>
+						</p>
+						<hr />
+						<canvas id="plotCanvas" width="800" height="600"></canvas>
+					</div>
+				</div>
+	
+			</section>
+
+			<hr />
+
+			<!-- ================================================== -->
+			<!-- DEFINITIONS -->
+			<!-- ================================================== -->
+			<section id="documentation">
+				<p>Source of documentation : <a href="https://github.com/VFD/CanonX07" target="_blank">X710 Manual.</a><br />
+				Need to be improved.</p>
+				<details>
+					<summary>📘 X710 Commands</summary>
+					<details>
+						<summary>1. Setup of Plotter</summary>
+						<ul>
+							<li><b>CHR$(17)</b> – Text mode.</li>
+							<li><b>CHR$(18)</b> – Graphic mode.</li>
+							<li><b>A</b> – END. Set Text mode and move pen to the full left.</li>
+						</ul>
+					</details>
+					<details>
+						<summary>2. Graphic Commands</summary>
+						<ul>
+							<li><b>C</b> – Select Pen: Select the active pen by number [0-3].<br />[0] Black; [1] Blue; [2] Green; [3] Red</li>
+							<li><b>D</b> – Draw: Draw to coordinate x,y.</li>
+							<li><b>F</b> – Next Line: Line feed.</li>
+							<li><b>H</b> – Return to Origin<br /> Origin is set by "I", or first position when printer start.</li>
+							<li><b>I</b> – Set Origin<br />Define the origin of drawing.</li>
+							<li><b>J</b> – Draw relative<br />Relative to x,y.</li>
+							<li><b>L</b> – Line Type<br />Sets line style (solid, dashed) [0-15].</li>
+							<li><b>M</b> – Move: Move to x,y (no draw).</li>
+							<li><b>P</b> – Print characters<br />Example: "PHello World!".</li>
+							<li><b>Q</b> – Angle for P: [0-3].
+								<ul>
+									<li>0: 0° - LTR, normal mode</li>
+									<li>1: -90° - (270°) to bottom</li>
+									<li>2: 180° - <span style="transform: rotate(180deg); display: inline-block;">RTL inverse</span></li>
+									<li>3: 90° - Up</li>
+								</ul>
+							</li>
+							<li><b>R</b> – Move Relative<br /> Move to x,y (no draw).</li>
+							<li><b>S</b> – Character size<br />[0-15].</li>
+						</ul>
+					</details>
+					<details>
+						<summary>3. Text Commands</summary>
+						<ul>
+							<li><b>CHR$(8)</b> – 1 char to left</li>
+							<li><b>CHR$(10)</b> – New line</li>
+							<li><b>CHR$(11)</b> – Previous line</li>
+							<li><b>CHR$(13)</b> – Carriage Return (move full left)</li>
+							<li><b>CHR$(17)</b> – Text mode</li>
+						</ul>
+					</details>
+				</details>
+			</section>
+			<!-- ================================================== -->
+			<!-- END DEFINITIONS -->
+			<!-- ================================================== -->
+
+		</main>
+
+		<hr />
+
+		<!-- Footer section -->
+		<footer>
+			<img src="assets/CC-BY-NC-ND-EU.png" alt="CC by NC ND EU" />
+			<p>&copy; 2026 VincentD - RPUFOS Work Tools</p>
+		</footer>
+
+		<!-- X710 simulator -->
+		<script src="js/X710.js" defer></script>
+
+	</body>
+	
+</html>
+<!-- EOF -->
