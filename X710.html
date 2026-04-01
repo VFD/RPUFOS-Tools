@@ -54,8 +54,9 @@
 		Compatible plotters: Tandy CGP-115, Commodore VIC‑1520, Atari 1020, ...<br />
 		JavaScript must be finished:
 			<ul>
-				<li>C, D, J, M, R comands: implemented, in test</li>
-				<li>F, H, I, L, P, Q, S commands not implemented yet</li>
+				<li>C, D, H, I, J, M(b), R comands: implemented, in test (b=bug)</li>
+				<li>P, Q, S commands : partial</li>
+				<li>F, L, commands not implemented yet</li>
 				<li>Open the // port to listen the X07 (this will be very fun)</li>
 			</ul>
 		</p>
@@ -65,10 +66,10 @@
 		<!-- Main content -->
 		<!--              -->
 		<main>
-		<!-- Section Open // -->
-		<!--
-		The idea is to open a // com to receive from X07.
-		-->
+			<!-- Section Open // -->
+			<!--
+			The idea here is to open a // com to receive from X07.
+			-->
 			<!-- Section Load file -->
 			<section class="files">
 				<h2>File to load</h2>
@@ -92,7 +93,7 @@
 					<br /><hr />
 					<label><input type="checkbox" id="autoplay"> Autoplay</label>
 					<br /><hr />
-					<label>Nom du fichier :
+					<label>Nom du fichier :<br />
 					<input type="text" id="plotterName" value="Plotter"> .plt
 					</label>
 					<br /><hr />
@@ -109,7 +110,7 @@
 						<button id="btnSavePNG">Save PNG</button>
 						<button id="btnSaveSVG">Save SVG</button>
 						<hr />
-						<label>Stylo 1
+						<label>Pen 1
 						<select id="pen1Color">
 							<option value="#000000" selected>Black</option>
 							<option value="#ff0000">Red</option>
@@ -117,7 +118,7 @@
 							<option value="#0000ff">Blue</option>
 						</select>
 						</label>
-						<label>Stylo 2
+						<label>Pen 2
 						<select id="pen2Color">
 							<option value="#000000">Black</option>
 							<option value="#0000ff" selected>Blue</option>
@@ -125,7 +126,7 @@
 							<option value="#ff0000">Red</option>
 						</select>
 						</label>
-						<label>Stylo 3
+						<label>Pen 3
 						<select id="pen3Color">
 							<option value="#000000">Black</option>
 							<option value="#0000ff">Blue</option>
@@ -133,7 +134,7 @@
 							<option value="#ff0000">Red</option>
 						</select>
 						</label>
-						<label>Stylo 4
+						<label>Pen 4
 						<select id="pen4Color">
 							<option value="#000000">Black</option>
 							<option value="#0000ff">Blue</option>
@@ -142,10 +143,11 @@
 						</select>
 						</label>
 						<hr />
+						<p>Y is reversed on the canvas.</p>
 						<p>
-							<b>Origin: </b><span>x,y</span>&emsp;
-							<b>Last x,y: </b>x,y<span></span>&emsp;
-							<b>Color selected: </b><span>c</span>
+							Origin (canvas): <b><span id="originXY">x,y</span></b>&emsp;
+							Last x,y: <b><span id="lastXY">x,y</span></b>&emsp;
+							Pen selected: <b><span id="penStatus">c</span></b>
 						</p>
 						<hr />
 						<canvas id="plotCanvas" width="800" height="600"></canvas>
