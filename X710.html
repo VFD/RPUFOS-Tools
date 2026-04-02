@@ -52,11 +52,16 @@
 		four pens to draw and test <a href="#documentation">basic commands</a> (see below).<br />
 		Only for Graphic Mode.<br />
 		Compatible plotters: Tandy CGP-115, Commodore VIC‑1520, Atari 1020, ...<br />
+		<b>Upper case is mandatory for commands.</b><br />
 		JavaScript must be finished:
 			<ul>
-				<li>C, D, H, I, J, M(b), R comands: implemented, in test (b=bug)</li>
+				<li>C, D, H, I, J, M, R comands: implemented, in test</li>
 				<li>P, Q, S commands : partial</li>
 				<li>F, L, commands not implemented yet</li>
+				<li>Save SVG : not working</li>
+				<li>delay between drawing ?</li>
+				<li>Text size in Cmds</li>
+				<li>Clear Cmds area</li>
 				<li>Open the // port to listen the X07 (this will be very fun)</li>
 			</ul>
 		</p>
@@ -73,25 +78,29 @@
 			<!-- Section Load file -->
 			<section class="files">
 				<h2>File to load</h2>
-				<p>Typically saved as a .plt file.</p>
+				<p>A text file with commands. Typically saved as a .plt file.</p>
 				<input type="file" id="fileInput">
 				<br /><br />
 				<span id="filename">No file loaded!</span>
 			</section>
 			<hr />
-			<!--                   -->
-			<!-- Section 20% / 80% -->
-			<!--                   -->
-			<!-- commands (20%) -->
+			<!--         -->
+			<!-- Section -->
+			<!--         -->
+			<!-- commands (see css for size) -->
 			<section class="layout">
 				<div class="commands">
 					<h3 style="text-align:center;">Cmds X710</h3>
 					<p style="text-align:center;"><i>1 Cmd by line please.</i></p>
 					<textarea id="commandsArea"></textarea><br />
 					<button id="btnTrace">Draw</button>
-					<button id="btnClear">Clear</button>
+					<button id="btnClear">Clear Commands (not yet)</button>
 					<br /><hr />
-					<label><input type="checkbox" id="autoplay"> Autoplay</label>
+					<p>⚠️ x,y are mathemathical ⚠️</p>
+					<hr />
+					<label><input type="checkbox" id="delay"> Delay</label>
+					<br /><hr />
+					<label><input type="checkbox" id="autoplay"> Autoplay (When loading file)</label>
 					<br /><hr />
 					<label>Nom du fichier :<br />
 					<input type="text" id="plotterName" value="Plotter"> .plt
@@ -100,15 +109,15 @@
 					<button id="btnSaveCommands">Save</button>
 					<hr />
 				</div>
-				<!-- Zone canvas (80%) -->
+				<!-- Zone canvas (see css for size) -->
 				<div class="canvas">
 					<div class="canvas-inner">
 						<h3 style="text-align:center;">Canvas</h3>
-						<p style="text-align:center;">480x2048 by X710 definition</p>
+						<p style="text-align:center;">480x2048 by X710 definition (-999&lt;= y &lt;= 999)</p>
 						<hr />
-						<button id="btnNew">Reset</button>
+						<button id="btnNew">Clear Canvas</button>
 						<button id="btnSavePNG">Save PNG</button>
-						<button id="btnSaveSVG">Save SVG</button>
+						<button id="btnSaveSVG">Save SVG (bug)</button>
 						<hr />
 						<label>Pen 1
 						<select id="pen1Color">
@@ -143,14 +152,14 @@
 						</select>
 						</label>
 						<hr />
-						<p>Y is reversed on the canvas.</p>
+						<p>⚠️ Origin is Up Left on Canvas and Y is reversed (-Y) on the canvas.</p>
 						<p>
 							Origin (canvas): <b><span id="originXY">x,y</span></b>&emsp;
 							Last x,y: <b><span id="lastXY">x,y</span></b>&emsp;
 							Pen selected: <b><span id="penStatus">c</span></b>
 						</p>
 						<hr />
-						<canvas id="plotCanvas" width="800" height="600"></canvas>
+						<canvas id="plotCanvas"></canvas>
 					</div>
 				</div>
 	
@@ -164,6 +173,11 @@
 			<section id="documentation">
 				<p>Source of documentation : <a href="https://github.com/VFD/CanonX07" target="_blank">X710 Manual.</a><br />
 				Need to be improved.</p>
+				<p><b><i>This is a work in progress, use at your own risk.</i></b></p>
+				<p>The canvas is 2048px long, to simulate the roll of paper.<br />
+				Max y is 999 and it's Min is -999, so within the middle of the paper you can draw picture.<br />
+				x is between 0 and 480.<br />
+				You can use comments in the command textarea, use ";".</p>
 				<details>
 					<summary>📘 X710 Commands</summary>
 					<details>
@@ -200,6 +214,8 @@
 					</details>
 					<details>
 						<summary>3. Text Commands</summary>
+						<p>The simulator accept "chr$(n)" or "CHR$(n)",
+						but this commands are not implemented.</p>
 						<ul>
 							<li><b>CHR$(8)</b> – 1 char to left</li>
 							<li><b>CHR$(10)</b> – New line</li>
