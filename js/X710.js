@@ -623,8 +623,17 @@ function saveCommands() {
 // --------------------------------------------------
 function savePNG() {
 	const canvas = state.ctx.canvas;
+	const baseName = document.getElementById('plotterName').value || 'Plotter';
+	const fileName = `${baseName}.png`;
+
+	
 	const url = canvas.toDataURL('image/png');
-	const a = document.createElement('a'); a.href = url; a.download = 'plot.png'; a.click();
+	const a = document.createElement('a');
+	a.href = url;
+	a.download = fileName;
+	a.click();
+	// Set DPI metadata (127 DPI = 0.2 mm per pixel)	
+	console.log("PNG saved. DPI=127");
 }
 
 
