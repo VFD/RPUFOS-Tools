@@ -86,12 +86,19 @@ function displayPen() {
 // ==================================================
 
 function drawLine(x1, y1, x2, y2) {
+	//
   const ctx = state.ctx;
+  const color = getPenColor(state.pen);
+  //
   ctx.beginPath();
   ctx.moveTo(x1, y1);
   ctx.lineTo(x2, y2);
   ctx.strokeStyle = getPenColor(state.pen);
   ctx.stroke();
+  
+  	// Add to SVG buffer
+	addSVGPath(x1, y1, x2, y2, color);
+  
 }
 
 
@@ -203,7 +210,7 @@ function cmdA() {
 function cmd8() {
 	// 1 character to left
 	// depend of S value
-	penDown: false;
+	state.penDown = false;
 	//
 	displayLastPosition();
 	console.log("CHR$(8): 1 char to left, not implemented");
@@ -216,7 +223,7 @@ function cmd8() {
 function cmd10() {
 	// Line Feed
 	// depend of S value ?
-	penDown: false;
+	state.penDown = false;
 	//
 	displayLastPosition();
 	console.log("CHR$(10): Line feed, not implemented");
@@ -229,7 +236,7 @@ function cmd10() {
 function cmd11() {
 	// Previous line
 	// depend of S value ?
-	penDown: false;
+	state.penDown = false;
 	//
 	displayLastPosition();
 	console.log("CHR$(11): Previous line, not implemented");
@@ -241,7 +248,7 @@ function cmd11() {
 // --------------------------------------------------
 function cmd13() {
 	// Carriage return, return to position x=0, y unchanged
-	penDown: false;
+	state.penDown = false;
 	state.x = 0;
 	displayLastPosition();
 	console.log("CHR$(13): Carriage return in test");
@@ -311,6 +318,7 @@ function cmdH() {
 // I: Set the new origin, no args
 // --------------------------------------------------
 function cmdI() {
+	//
 	// Reset transform
 	state.ctx.resetTransform();
 	// New origin
@@ -335,21 +343,29 @@ function cmdI() {
 function cmdJ(args) {
 	// args = x,y...
 	// example: J100,100,150,150
+	// Draws lines relative to current position
 	const coords = args.split(',');
+	//
 	if (coords.length < 2) {
+		console.log("J: invalid parameters (need at least x,y)");
 		return false;
 	}
+	// Process pairs of coordinates
 	for (let i = 0; i < coords.length; i += 2) {
 		const dx = parseInt(coords[i], 10);
 		const dy = parseInt(coords[i + 1], 10);
+		// Calculate absolute position
+		const newX = state.x + dx;
+		const newY = state.y + dy;
+		// Draw line from current position to new position
 		state.penDown = true;
-		drawLine(state.x, state.y, state.x + dx, state.y + dy);
-		state.x += dx;
-		state.y += dy;
-		displayLastPosition();
-		console.log("J: Draw line relative to " + state.x + "," + state.y);
+		drawLine(state.x, state.y, newX, newY);
+		// Update current position
+		state.x = newX;
+		state.y = newY;
+		console.log("J: Draw relative line to (" + newX + "," + newY + ")");
 	}
-	//
+	displayLastPosition();
 	return true;
 }
 
@@ -385,53 +401,73 @@ function cmdM(args) {
 }
 
 // --------------------------------------------------
-// Print text
+// P: Print text
+// Remember: state.ctx.scale(1, -1);	// Reverse Y
 // --------------------------------------------------
 function cmdP(args) {
 	// args: P[Characters]
 	// example: PHello World!
-	
 	if (!args || args.length === 0) {
 		console.log("P: no text to print");
 		return false;
 	}
-	
-	// Utiliser state.charWidth et state.charHeight définis par cmdS()
+	//
 	const ctx = state.ctx;
 	ctx.font = `${state.charHeight}px ${state.font}`;
 	ctx.fillStyle = getPenColor(state.pen);
 	ctx.textBaseline = 'top';
-	
-	// Écrire le texte
-	ctx.fillText(args, state.x, state.y);
-	
-	// Avancer la position X (largeur totale du texte)
+	// Save the context state
+	ctx.save();
+	// Temporarily invert the Y scale for text rendering
+	ctx.scale(1, -1);
+	// When Y is inverted, 'top' becomes 'bottom' and vice-versa
+	// So we use 'bottom' to display text correctly
+	ctx.textBaseline = 'bottom';
+	// Draw the text with inverted Y
+	// Since scale(1, -1) is applied, we must use -state.y
+	ctx.fillText(args, state.x, -state.y);
+	// Restore the context state
+	ctx.restore();
+	// Advance X position (total width of text)
 	state.x += args.length * state.charWidth * state.charSpacing;
-	
 	displayLastPosition();
 	console.log("P: Print text '" + args + "'");
 	return true;
 }
 
 // --------------------------------------------------
-// text angle (in °)
+// Q: Text angle (in degrees)
 // --------------------------------------------------
 function cmdQ(args) {
 	// args = 0 or 1 or 2 or 3 [0-3]
 	// example: Q3
+	if (!args || args.length === 0) {
+		console.log("Q: no rotation value provided");
+		return false;
+	}
+	//
 	const a = parseInt(args[0], 10);
-	if (a == 0) { state.textAngle = 0; }
-	if (a == 1) { state.textAngle = -90; }
-	if (a == 2) { state.textAngle = 180; }
-	if (a == 3) { state.textAngle = 90; }
-	// 
-	console.log("Q: ", state.textAngle ," - not functional");
-	return
+	//
+	if (a === 0) {
+		state.textAngle = 0;		// LTR (Left to Right)
+	} else if (a === 1) {
+		state.textAngle = -90;		// Up (90° counter-clockwise)
+	} else if (a === 2) {
+		state.textAngle = 180;		// Flipped (upside down)
+	} else if (a === 3) {
+		state.textAngle = 90;		// Down (90° clockwise)
+	} else {
+		console.log("Q: invalid rotation value (must be 0-3)");
+		return false;
+	}
+	//
+	console.log("Q: Text rotation set to", state.textAngle, "degrees");
+	return true;
 }
 
 
 // --------------------------------------------------
-// Move relative to x,y
+// R: Move relative to x,y
 // --------------------------------------------------
 function cmdR(args) {
 	// args = x,y
@@ -485,9 +521,15 @@ function parseCommandToken(token) {
 	if (chrMatch) {
 		return { cmd: token.toUpperCase(), args: '' };
 	}
+	// Handle P command: preserve all spaces after P
+	if (token.toUpperCase().startsWith('P')) {
+		const cmd = 'P';
+		const args = token.slice(1); // Keep everything after P, including leading spaces
+		return { cmd, args };
+	}
 	// Handle single character commands with optional parameters
 	const cmd = token.slice(0, 1).toUpperCase();
-	const rest = token.slice(1).trim();
+	const rest = token.slice(1).trim(); // trim() space
 	const args = rest;
 	return { cmd, args };
 }
@@ -582,15 +624,53 @@ function savePNG() {
 	const a = document.createElement('a'); a.href = url; a.download = 'plot.png'; a.click();
 }
 
+
+// ==================================================
+// SVG Path Buffer Management
+// ==================================================
+
+function addSVGPath(x1, y1, x2, y2, color) {
+	// Store ORIGINAL coordinates (before canvas inversion)
+	// The canvas uses scale(1, -1), so we need to invert back for SVG
+	const svgY1 = -y1;  // Invert Y back
+	const svgY2 = -y2;  // Invert Y back
+	
+	const path = `<line x1="${x1}" y1="${svgY1}" x2="${x2}" y2="${svgY2}" stroke="${color}" stroke-width="1"/>`;
+	state.svgPaths.push(path);
+}
+
+function addSVGText(text, x, y, color, fontSize) {
+	// Store ORIGINAL coordinates (before canvas inversion)
+	const svgY = -y;  // Invert Y back
+	
+	const textElement = `<text x="${x}" y="${svgY}" fill="${color}" font-size="${fontSize}" font-family="sans-serif">${text}</text>`;
+	state.svgPaths.push(textElement);
+}
+
 // --------------------------------------------------
 // Save canvas as SVG file (BUG)
 // --------------------------------------------------
 function saveSVG() {
 	const canvas = state.ctx.canvas;
-	const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${canvas.width}" height="${canvas.height}"></svg>`;
-	const blob = new Blob([svg], { type: 'image/svg+xml' });
+	
+	// Build SVG with all captured paths
+	let svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="${canvas.width}" height="${canvas.height}">`;
+	svgContent += `<rect width="${canvas.width}" height="${canvas.height}" fill="white"/>`;
+	
+	// Add all paths as-is (already corrected in addSVGPath)
+	svgContent += state.svgPaths.join('');
+	
+	svgContent += `</svg>`;
+	
+	const blob = new Blob([svgContent], { type: 'image/svg+xml' });
 	const url = URL.createObjectURL(blob);
-	const a = document.createElement('a'); a.href = url; a.download = 'plot.svg'; a.click();
+	const a = document.createElement('a');
+	a.href = url;
+	a.download = 'plot.svg';
+	a.click();
+	URL.revokeObjectURL(url);
+	
+	console.log("SVG saved with " + state.svgPaths.length + " elements");
 }
 
 // --------------------------------------------------
