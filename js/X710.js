@@ -7,11 +7,14 @@
  *  License : CC BY-NC 4.0 International
  * ------------------------------------------------------------
  *  Description:
- *    - X710 emulator (standard commands only)
+ *		- X710 emulator (standard commands only)
  *
  *  Notes:
- *    - On canvas Y is reversed +Y mean down
- *    - ...
+ *		- On canvas Y is reversed +Y mean down
+ *		- cmdP() : bug direction and change x,y
+ *		- Need to implement X710 Charcters set
+ *		- Need to simplify reset Clear and start of X710
+ *		- Need to improve canvas code
  * ------------------------------------------------------------
  */
 
