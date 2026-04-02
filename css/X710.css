@@ -1,12 +1,11 @@
 /* ============================================================
-   File: base.css
-   Description: 
+   File: X710.css
+   Description: GUI for the X710 simulator
    Author: VincentD
-   Created: November 26, 2025
-   Last Updated: November 26, 2025
+   Created: Mars 2026
+   Last Updated: April 02, 2026
    Version: 1.0
    ============================================================ */
-
 
 
 body {
@@ -33,40 +32,36 @@ body {
   margin-right: 10px;
 }
 
-/* Layout 20% / 80% */
+/* Layout */
 .layout {
   display: flex;
   flex-direction: row;
-  gap: 20px;
+  gap: 1em;
+  box-sizing: border-box;
 }
 
 .commands {
-  flex: 0 0 20%;
+  flex: 0 0 30%;
+  min-width: 0;
 }
 
 .canvas {
-  flex: 0 0 80%;
+  flex: 1;
+  min-width: 0;
 }
 
 /* Éléments */
 textarea {
   width: 100%;
-  min-height: 220px;   /* hauteur minimale */
-  resize: vertical;    /* l’utilisateur peut étendre vers le bas */
-  font-size: 0.75em;
-}
-
-
-.layout {
-  display: flex;
-  flex-direction: row;
-  gap: 20px;
-  padding-right: 20px;   /* espace à droite pour éviter le canvas collé */
+  height: 40lh;
+  min-height: 12lh;
+  resize: vertical;
   box-sizing: border-box;
 }
 
-.canvas {
-  flex: 0 0 80%;
+textarea:focus {
+  outline: none;
+  border-color: #4CAF50;
 }
 
 canvas {
@@ -75,21 +70,23 @@ canvas {
   margin-top: 10px;
   width: 100%;
   height: auto;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 label {
   display: inline-block;
   margin-right: 10px;
 }
+
 select {
   margin-left: 5px;
 }
 
 /* documentation */
-
 summary {
   display: flex;
-  list-style: none;       /* supprime le triangle */
+  list-style: none;
   align-items: center;
   cursor: pointer;
 }
@@ -101,13 +98,12 @@ summary h3 {
 }
 
 summary::-webkit-details-marker {
-  display: none;          /* supprime le triangle sur Chrome/Safari */
+  display: none;
 }
 
 details details {
-  margin-left: 20px;   /* indentation des sous-sections */
+  margin-left: 20px;
 }
-
 
 details[open] > summary::before {
   content: "➖ ";
@@ -116,6 +112,5 @@ details[open] > summary::before {
 details > summary::before {
   content: "➕ ";
 }
-
 
 /* ==================== EOF ===================== */
